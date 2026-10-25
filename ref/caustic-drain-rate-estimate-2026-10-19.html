@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Caustic Drain Rate Estimate</title>
+
+
+<style>
+:root{--paper:#f3f5f8;--surface:#fff;--sunk:#e9edf2;--ink:#142231;--muted:#566474;--rule:#d3dae2;--navy:#1f3864;
+--navy-ink:#fff;--navy-muted:#b9c6dc;--zh:#0067b3;--link:#1d4f9c;--hl:#fff2cc;--focus:#2a6fd6;
+--f-display:"Archivo","Arial Narrow",Arial,sans-serif;--f-body:"IBM Plex Sans","Noto Sans SC",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+--f-zh:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;
+--muted:#9babbb;--rule:#2a3744;--navy:#172742;--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;--muted:#9babbb;--rule:#2a3744;--navy:#172742;
+--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--f-body)}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:var(--link);text-underline-offset:2px}a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.mast{background:var(--navy);color:var(--navy-ink)}header.mast .wrap{padding-block:20px 16px}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--navy-muted)}
+h1{font-family:var(--f-display);font-stretch:86%;font-weight:700;font-size:1.75rem;line-height:1.1;margin:4px 0 0;text-wrap:balance}
+h1 .zh{display:block;font-size:.6em;font-weight:500;color:var(--navy-muted);margin-top:6px;font-family:var(--f-zh)}
+.src{font-size:.82rem;color:var(--navy-muted);margin-top:10px;max-width:90ch}
+main{padding-block:20px 60px}
+.zh{color:var(--zh);font-family:var(--f-zh)}
+.tw{background:var(--surface);border:1px solid var(--rule);border-radius:8px;overflow-x:auto}
+table.hsw{width:100%;border-collapse:collapse;font-size:.85rem}
+.hsw th{text-align:left;vertical-align:bottom;background:var(--sunk);color:var(--muted);font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--rule)}
+.hsw th .zh{display:block;text-transform:none;letter-spacing:0;font-weight:500}
+.hsw td{vertical-align:top;padding:10px;border-bottom:1px solid var(--rule);overflow-wrap:anywhere;min-width:5.5rem}
+.hsw td.idc{font-family:var(--f-mono);font-weight:500;white-space:nowrap;min-width:0}
+.hsw td.wide{min-width:16rem}
+.hsw tr:target td{background:var(--hl)}
+.hsw tr:target td.idc{box-shadow:inset 4px 0 0 var(--link)}
+.pic{color:var(--muted);font-style:italic;font-size:.8rem}
+.doc{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:8px 28px 28px;max-width:1100px}
+.doc h1,.doc h2,.doc h3{font-family:var(--f-display);font-stretch:90%;line-height:1.2;text-wrap:balance}
+.doc h1{font-size:1.6rem;color:var(--ink)}.doc h2{font-size:1.25rem;margin-top:2rem;padding-bottom:4px;border-bottom:2px solid var(--ink)}.doc h3{font-size:1.05rem;margin-top:1.4rem}
+.doc p,.doc li{max-width:80ch}
+.doc .tbl{overflow-x:auto;margin:12px 0}
+.doc table{border-collapse:collapse;font-size:.84rem;min-width:100%}
+.doc th,.doc td{border:1px solid var(--rule);padding:6px 8px;vertical-align:top;text-align:left}
+.doc th{background:var(--sunk)}
+.doc tr:target td{background:var(--hl)}
+.doc code{font-family:var(--f-mono);font-size:.86em;background:var(--sunk);padding:1px 4px;border-radius:3px}
+.doc pre{background:var(--sunk);padding:12px;border-radius:6px;overflow-x:auto;font-size:.8rem}
+.doc pre code{background:none;padding:0}
+.doc blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid var(--link);background:var(--sunk)}
+.doc pre.mermaid{background:var(--surface);text-align:center}
+.doc del{color:var(--muted)}
+.cut{font-size:.85rem;color:var(--muted);border:1px dashed var(--rule);border-radius:6px;padding:8px 12px;margin:14px 0}
+@media (max-width:760px){h1{font-size:1.4rem}.doc{padding:4px 14px 18px}
+ table.hsw,.hsw tbody,.hsw tr,.hsw td{display:block}.hsw thead{display:none}
+ .hsw tr{border-bottom:1px solid var(--rule);padding:10px 12px}.hsw td{border:0;padding:3px 0;min-width:0}
+ .hsw td[data-k]::before{content:attr(data-k);display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+ .hsw td:empty{display:none}}
+</style>
+
+</head>
+<body>
+<header class="mast"><div class="wrap">
+<div class="eyebrow">SWC · calculation note</div>
+<h1>Caustic drain rate estimate<span class="zh">排碱速率估算</span></h1>
+<div class="src">From <code>DVT/DVT1/Firmware/Caustic drain rate estimate 2026-10-19.md</code> in the shared repo, rendered as it stands on 21 October. Its height inputs were superseded on 21 October; see the note at the top.</div>
+</div></header>
+<main class="wrap">
+<article class="doc"><h1 id="caustic-drain-rate-estimate-hcg-50-dvt">Caustic drain rate estimate, HCG-50 DVT</h1>
+<p><strong>Date:</strong> 2026-10-19
+<strong>For:</strong> the caustic-drain firmware, Jira HCG-351, and the starting value of the drain timer T_drain
+<strong>Status:</strong> draft for Alex's review. Calculation only. Nothing here has been measured on a unit.</p>
+<blockquote>
+<p><strong>Superseded inputs, 2026-10-21.</strong> HSW's 2026-10-16 risk statement gives the DVT1 heights from the tank floor: normal brine level 62 cm, set by the gas mixer's overflow port; external caustic port 57.2 cm; internal connection between the chambers 49.5 cm. One drain lowers both chambers 4.8 cm. This note used a 2 cm drop read from HSW's 10/13 Risk 2, about 2.5 L above the port, and an interconnect about 4 cm above normal level, so those inputs and every result built on them are superseded. Over the same 1,245 cm² falling surface a 4.8 cm drop is about 6 L, and port-uncover times scale up with it, but the model hasn't been rerun. The CAD heights used here (port Z491) don't reconcile with HSW's numbers either. Two other points have moved: Alex confirmed on 10/21 that the headspace isn't hermetically sealed and can vent (the headspace check below is answered), and the four level sensors sit in the caustic chamber and read the shared level. Frank placed the Phoenix leaks at the plugged bottom port on 10/20, not the welds. See <code>NOTES.md</code> 10/16 and 10/21.</p>
+</blockquote>
+<h2 id="answer">Answer</h2>
+<p>At a typical site the drain pulls about 2 to 4 L/min out of the vessel and uncovers the port in about 1 to 3 minutes. Ten minutes is long enough everywhere the drain works at all. At most sites it is three to ten times longer than it needs to be.</p>
+<ul>
+<li><strong>Pool-line pressure decides the rate.</strong> Both taps sit on the pool return line, so the venturi has to push the drained liquid into a pressurised pipe. With the OUT tap at 0 to 20 kPa gauge the model gives 1.5 to 6 L/min, central 3 to 4. At 40 kPa it gives 0 to 3 L/min, central 2. At 60 kPa it gives at most 1.6 L/min, central 0.9. Somewhere between 40 and 85 kPa, depending on losses the records don't pin down, suction stops altogether, and no timer setting helps then.</li>
+<li><strong>About 2.5 L sits above the port.</strong> <em>(Superseded 10/21, see the note at the top.)</em> HSW gives a 2 cm gap between the discharge port and the normal level, which I read as the level sitting above the port. The free surface that falls when the port drains is about 1,250 cm², which gives 2.5 L, with a range of 1.2 to 3.7 L.</li>
+<li><strong>The port uncovers in 0.5 to 2.5 minutes at a low-pressure site,</strong> about 3 minutes at 60 kPa, and 7.5 minutes in the worst working case I could construct, 3.7 L at 0.5 L/min. Add up to a minute for the last part, when the venturi draws air and liquid together.</li>
+<li><strong>After the port uncovers, the rest of the timer removes nothing.</strong> The venturi draws headspace gas instead.</li>
+<li><strong>At today's brine pH a drain removes little caustic.</strong> At full current, 2 cells at 15 A, the cells make 2.2 mol of hydroxide every 2 h, about 90 g as NaOH. One drain takes out 4 to 6 % of the vessel's liquid. At the brine pH HSW has measured, 10.3 to 11, the free hydroxide in that slice is about 0.1 % of what two hours of generation makes. Timer length doesn't change this. Drain frequency and port height do.</li>
+</ul>
+<p>Recommendation: ship 10 minutes as the first value. It covers every case where the drain works, and it can be changed over MQTT. Before units run it unattended, confirm two things. The vessel headspace must vent to atmosphere, and a drain must not trip the low-level interlock. Both are explained below. Once HSW has bench data, set T_drain to about twice the slowest port-uncover time measured at the highest tap pressure the fleet sees. That should land at 3 to 5 minutes if site tap pressures stay under about 40 kPa, and nearer 8 minutes if a site runs at 60 kPa.</p>
+<h2 id="how-the-drain-works">How the drain works</h2>
+<p>During Caustic drain, valves A, B and C are closed, valve D is open, the booster runs, and both cells are off with their SSRs open. These are Alex's 10/19 decisions. The booster takes pool water from the IN tap and drives it through the venturi nozzle and out to the OUT tap. The fast jet leaving the nozzle sits below the pressure in the vessel, so it pulls liquid in through the suction port. With B and C shut, D is the only open suction branch, so the venturi draws from the vessel through the port, valve D, the T and the venturi's built-in inlet check valve.</p>
+<p>The pad tie-in schematic of 8/7 puts IN after the filter and before any heater, and OUT after the heater. Both taps are on the pressurised return line. The vessel is at atmospheric pressure, so the venturi has to lift the drained liquid from roughly zero gauge up to return-line pressure. That lift, not the booster, sets the drain rate at most sites.</p>
+<p>I modelled the venturi as a one-dimensional liquid jet pump, using Cunningham's 1957 momentum-balance model, the one pump handbooks use. It needs the nozzle and throat areas plus four loss coefficients. I solved it together with the DC55E head curve, a loss term for the motive loop, a loss term for the outlet tubing, and the suction-side pressure. Appendix A has the equations and the script. The model assumes the venturi's mixing section behaves like a short jet-pump throat. The DVT part is a compact moulded injector with almost no mixing length, so I swept the mixing loss over a wide range rather than trust one value.</p>
+<h2 id="inputs">Inputs</h2>
+<p>Sourced means a record states the value. Inferred means I derived it from a record. Assumed means no record gives it.</p>
+<h3 id="hydraulics">Hydraulics</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Value used</th>
+<th>Range swept</th>
+<th>Status</th>
+<th>Source and notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Booster head curve</td>
+<td>DC55E at 24 V. 16 m at 0, 14.6 m at 5.5 L/min, 11.5 m at 15.1, 8.6 m at 22.7, 5.3 m at 30.3, 2.5 m at 36, 0 at 40 L/min</td>
+<td>head × 0.6 to 1.0</td>
+<td>Sourced</td>
+<td><code>Data Sheets/EN/Zhongke DC55E Brushless DC Pump Specification (bilingual).pdf</code>, p. 3 chart, read by eye to about ±0.5 m. The 0 and 40 L/min end points are the rated 16 m and 2400 L/h</td>
+</tr>
+<tr>
+<td>Booster speed</td>
+<td>Full speed</td>
+<td></td>
+<td>Sourced</td>
+<td>Firmware switches P06 on and off through the IO expander with no speed command. <code>main/AppTask.c</code> in the local mainboard clone, commit 79f9a1b of 10 Aug. Newer builds not checked</td>
+</tr>
+<tr>
+<td>Nozzle bore</td>
+<td>Ø5 mm</td>
+<td>Ø3 to Ø5.5</td>
+<td>Inferred</td>
+<td>8/6 CAD review lists the venturi bores as "Ø5/Ø7/Ø13 class". I read the smallest as the nozzle. That geometry is April's, but the vendor says the June replacement venturi came from the same tooling</td>
+</tr>
+<tr>
+<td>Throat, diffuser entry</td>
+<td>Ø7 mm, area ratio 0.51</td>
+<td>Ø6.5 to Ø8</td>
+<td>Inferred</td>
+<td>Same CAD bore list</td>
+</tr>
+<tr>
+<td>Jet pump losses</td>
+<td>Nozzle 0.05, suction entry 0.1, throat plus diffuser 0.25</td>
+<td>Throat plus diffuser 0.15 to 0.8</td>
+<td>Assumed</td>
+<td>Typical published jet pump values. A short moulded injector should sit at the high end</td>
+</tr>
+<tr>
+<td>Motive loop, IN tap to venturi</td>
+<td>K = 20 on a 14 mm bore, about 34 kPa at 17 L/min</td>
+<td>10 to 80</td>
+<td>Assumed</td>
+<td>Y-strainer, flow meter A, tubing and fittings. Not measured</td>
+</tr>
+<tr>
+<td>Outlet, venturi to OUT tap</td>
+<td>K = 8 on a 14 mm bore</td>
+<td>4 to 16</td>
+<td>Assumed</td>
+<td>Install tubing is 14 mm ID, one 4 m coil for both runs, per NOTES.md 8/6</td>
+</tr>
+<tr>
+<td>Tap pressures</td>
+<td>IN and OUT both at the pool-line pressure</td>
+<td>0 to 120 kPa gauge. Heater between taps adds 15 kPa at IN</td>
+<td>Topology sourced, values assumed</td>
+<td>Pad tie-in schematic, <code>DVT/DVT1/CG_HCG50_pad_tie_in_schematic.svg</code>. Nobody has measured line pressure at an HCG-50 tap</td>
+</tr>
+<tr>
+<td>Suction path</td>
+<td>Check valve cracking at 2 kPa plus K = 10 on a 6 mm bore</td>
+<td>Cracking 0.5 to 10 kPa. Path from K = 5 at Ø8 to K = 40 at Ø5</td>
+<td>Assumed</td>
+<td>The bores of valve D, the D line, the T and the check valve aren't recorded. HSW's 10/13 issue list proposes a lower cracking-pressure valve, so the check valve is a known suspect</td>
+</tr>
+<tr>
+<td>Vessel level over venturi</td>
+<td>0.27 m</td>
+<td>0.20 m</td>
+<td>Inferred</td>
+<td>April CAD puts the venturi centreline at Z240 and the port at Z491. Level taken 2 cm above the port</td>
+</tr>
+<tr>
+<td>Drained liquid density</td>
+<td>1.15 × pool water</td>
+<td>1.0 to 1.25</td>
+<td>Assumed</td>
+<td>Brine carrying caustic</td>
+</tr>
+<tr>
+<td>Vessel headspace</td>
+<td>Atmospheric</td>
+<td>6 kPa below</td>
+<td>Assumed</td>
+<td>See "Two checks" below</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="volume-above-the-port">Volume above the port</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Value</th>
+<th>Status</th>
+<th>Source and notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Port</td>
+<td>G¾ boss, Ø26.4 at Z491, on the 210 × 284.8 chamber, valve D bolted to it</td>
+<td>Sourced, thread inferred</td>
+<td>8/6 CAD review. Ø26.4 matches the 26.44 mm major diameter of a G¾ thread, and the 5/8 drawings list G¾ bosses on the vessel</td>
+</tr>
+<tr>
+<td>Normal level relative to the port</td>
+<td>2 cm above. Superseded 10/21: 4.8 cm per HSW 10/16</td>
+<td>Sourced, direction interpreted</td>
+<td>HSW 10/13 workbook, Risk 2: "盐水箱上面碱液排放口的高度与正常液位只相差2cm,这意味着碱液排放量有限". The text gives a 2 cm gap without a direction. Its conclusion, a limited discharge volume, only works if the level sits above the port</td>
+</tr>
+<tr>
+<td>Useful drain depth</td>
+<td>2 cm</td>
+<td>1.5 to 3 cm</td>
+<td>Assumed</td>
+</tr>
+<tr>
+<td>Chamber footprints</td>
+<td>210 × 284.8, 175 × 390, and 210 × 100.2 mm</td>
+<td></td>
+<td>Sourced</td>
+</tr>
+<tr>
+<td>Interconnection</td>
+<td>15 holes of Ø6 at 81 to 88 mm and 4 of Ø12 at mid-height between the 210 × 284.8 and 175 × 390 chambers. One Ø25 at Z551 into the 210 × 100.2 chamber</td>
+<td></td>
+<td>Sourced</td>
+</tr>
+<tr>
+<td>Falling free surface</td>
+<td>1,245 cm²</td>
+<td>598 cm² if only the port's own chamber falls</td>
+<td>Inferred</td>
+</tr>
+</tbody>
+</table></div>
+<p>If valve D in fact draws from the small 210 × 100.2 chamber, the open question in ARCHITECTURE.md §5 row 13, the volume above the port drops to 0.3 to 0.6 L and every drain time below shrinks by a factor of four.</p>
+<h2 id="results">Results</h2>
+<h3 id="suction-flow-out-of-the-vessel">Suction flow out of the vessel</h3>
+<p>Suction flow in L/min at each pool-line pressure at the taps, gauge. The last column is the line pressure at which suction stops.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Case</th>
+<th>0 kPa</th>
+<th>20 kPa</th>
+<th>40 kPa</th>
+<th>60 kPa</th>
+<th>Stalls at, kPa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Base</td>
+<td>4.0</td>
+<td>3.2</td>
+<td>2.2</td>
+<td>0.9</td>
+<td>70</td>
+</tr>
+<tr>
+<td>Open suction path, K = 5 at Ø8</td>
+<td>6.2</td>
+<td>4.6</td>
+<td>2.9</td>
+<td>1.1</td>
+<td>70</td>
+</tr>
+<tr>
+<td>Restrictive suction path, K = 40 at Ø5</td>
+<td>1.8</td>
+<td>1.5</td>
+<td>1.1</td>
+<td>0.6</td>
+<td>70</td>
+</tr>
+<tr>
+<td>Check valve cracking at 10 kPa</td>
+<td>3.7</td>
+<td>2.8</td>
+<td>1.7</td>
+<td>0.3</td>
+<td>63</td>
+</tr>
+<tr>
+<td>Poor mixing, throat plus diffuser 0.5</td>
+<td>3.5</td>
+<td>2.6</td>
+<td>1.5</td>
+<td>0</td>
+<td>59</td>
+</tr>
+<tr>
+<td>Outlet tubing loss doubled</td>
+<td>3.0</td>
+<td>2.0</td>
+<td>0.7</td>
+<td>0</td>
+<td>49</td>
+</tr>
+<tr>
+<td>Booster at 60 % of datasheet head</td>
+<td>3.3</td>
+<td>2.2</td>
+<td>0.8</td>
+<td>0</td>
+<td>48</td>
+</tr>
+<tr>
+<td>Motive loop K = 80, a partly blocked strainer</td>
+<td>3.1</td>
+<td>1.9</td>
+<td>0</td>
+<td>0</td>
+<td>38</td>
+</tr>
+<tr>
+<td>Low motive loss, K = 10</td>
+<td>4.3</td>
+<td>3.5</td>
+<td>2.6</td>
+<td>1.6</td>
+<td>83</td>
+</tr>
+<tr>
+<td>Nozzle Ø3.5</td>
+<td>4.6</td>
+<td>3.7</td>
+<td>2.6</td>
+<td>1.1</td>
+<td>68</td>
+</tr>
+<tr>
+<td>Nozzle Ø5.5</td>
+<td>3.4</td>
+<td>2.5</td>
+<td>1.3</td>
+<td>0</td>
+<td>57</td>
+</tr>
+</tbody>
+</table></div>
+<p>Pool-line pressure matters most. Each 20 kPa at the taps costs roughly 1 L/min, and the drain stalls between 38 and 83 kPa across the cases. At low line pressure the suction path, not the venturi, sets the flow, which is why the bores of valve D, the T and the check valve matter more than the nozzle. Losses on the motive side come third. A partly blocked strainer roughly halves the stall pressure. The nozzle bore, the check valve up to 10 kPa, liquid density and level height each move the answer by well under 1 L/min.</p>
+<p>Two checks against the records support the model's scale. First, the RT30 venturi manual asks installers for at least 5 inches of mercury of dead-headed suction vacuum and calls 10 to 20 optimal. The model gives 9 to 21 inHg at the suction port with no flow for line pressures of 0 to 40 kPa. That is a different venturi, so it only shows the numbers are plausible. Second, HSW's 6/30 report found the demo venturi pulling about 300 ml/min more than the DVT one, which had an outlet pipe 2 mm narrower. On a pipe of about 14 mm, 2 mm narrower roughly doubles the outlet loss, and in the model that costs 0.5 to 1 L/min. That is the same order.</p>
+<p>One record disagrees with the model. NOTES.md for 8/28 records flow meter A on Urim's bench unit reading 6 to 8 L/min with the booster on. The firmware converts the meter at F = 7 × Q, so those are L/min. The model predicts 15 to 19 L/min of motive flow with a Ø5 nozzle at datasheet head. Two explanations fit 6 to 8 L/min, and they point opposite ways for the drain. A nozzle nearer Ø3 gives 7.6 L/min motive flow and leaves suction almost unchanged at 4.3, 3.3 and 1.9 L/min at 0, 20 and 40 kPa. A restriction in the motive loop that cuts flow to 7 L/min drops suction to 1.8 L/min at 0 kPa and stalls it at 20 kPa. The bench test below separates the two.</p>
+<h3 id="time-to-uncover-the-port">Time to uncover the port</h3>
+<p>Minutes from valve D opening to the level reaching the port, for each volume and suction flow.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Volume above port</th>
+<th>0.5 L/min</th>
+<th>1 L/min</th>
+<th>2 L/min</th>
+<th>3.5 L/min</th>
+<th>5 L/min</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.2 L, only the port's own chamber falls</td>
+<td>2.4</td>
+<td>1.2</td>
+<td>0.6</td>
+<td>0.3</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td>2.5 L, central</td>
+<td>5.0</td>
+<td>2.5</td>
+<td>1.2</td>
+<td>0.7</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>3.7 L, 3 cm useful depth</td>
+<td>7.4</td>
+<td>3.7</td>
+<td>1.9</td>
+<td>1.1</td>
+<td>0.7</td>
+</tr>
+</tbody>
+</table></div>
+<p>Add an assumed 0.5 to 1 minute at the end. As the level nears a side port, air starts to enter with the liquid and the liquid flow falls off. The base case at 40 kPa takes about 1.2 minutes plus that tail. At 60 kPa it takes 2.8 minutes plus the tail.</p>
+<h2 id="how-fast-caustic-builds-up-between-drains">How fast caustic builds up between drains</h2>
+<p>At full current, 2 cells at 15 A, the cathodes make 1.12 mol of hydroxide per hour, which is 2.24 mol or about 90 g as NaOH in a 2 h interval. That assumes all the current goes to hydroxide, so it is an upper bound. They also make about 14 L/h of hydrogen.</p>
+<p>How much liquid carries that hydroxide depends on how the cathode compartments are fed, and the records don't settle it. If the compartments were closed and fed only by water dragged through the membrane, assumed at 3.5 to 4.5 water molecules per sodium ion, the cells would deliver about 0.15 to 0.2 L of 40 to 47 % caustic per 2 h. The 8/6 CAD review shows both cells bottom-fed from one shared manifold. That points to brine-fed cathode compartments, where hydrogen lifts dilute caustic brine up the standpipes and it mixes into the vessel. In the closed case, two hours make far less liquid than the 2.5 L a drain removes. In the brine-fed case the caustic is already spread through the vessel. Either way the drain's volume isn't what limits it. Mixing is, because by the time the drain runs the hydroxide is spread through the whole vessel.</p>
+<p>From the chamber footprints and a liquid depth of about 45 cm, less the cells and salt bed, I estimate the vessel holds roughly 50 to 60 L at normal level. One drain swaps 4 to 6 % of it for RO water once makeup refills it. HSW has measured brine at pH 10.3 after 11 h and above 11 in the failed 6/30 run. Free hydroxide at those pH values is 0.0002 to 0.001 mol/L. A 2.5 L slice therefore carries 0.0005 to 0.0025 mol, 0.02 to 0.1 % of the 2.24 mol made in two hours. Even at pH 12 it would be about 1 %. Diluting 4.5 % of the brine with RO water lowers pH by about 0.02 per drain.</p>
+<p>Two things follow. First, most of the hydroxide the cells make doesn't stay in the brine as free hydroxide. It is either neutralised inside the vessel by acid and chlorine coming back from the anode side, which also turns some chlorine into hypochlorite in the brine, or it is held as alkalinity that pH doesn't show. Second, a drain removes caustic only if the liquid at the port is much richer in caustic than the bulk brine. Only a titration settles this, and it is in the bench plan below. HSW raised the same doubt in Risk 2.</p>
+<p>Refill matters for the drain interval. Makeup runs at about 30 ml/min, the figure ARCHITECTURE.md carries. Replacing 1.2 to 3.7 L takes 40 to 125 minutes, close to the 2 h interval. Makeup also needs valve A open, which only happens during generation.</p>
+<h2 id="is-10-minutes-right">Is 10 minutes right</h2>
+<p>It is long enough. It covers every working case above, including the 7.5-minute worst case, with margin. The only case it fails is a stalled venturi at a high-pressure site, and no timer setting fixes that.</p>
+<p>It is also longer than most sites need. In the expected range of 0 to 40 kPa the port uncovers in 1 to 3 minutes, and the remaining 7 to 9 minutes remove nothing. Those minutes cost three things. A 10-minute drain every 2 h idles the cells for about 8 % of a long run, and 3 minutes would cut that to under 3 %, in both cases on top of the 90 s shutdown dwell before each drain. The booster runs while doing no work. And the venturi spends the overrun drawing gas out of the vessel headspace, which leads to the first check below.</p>
+<p>So 10 minutes is a sound conservative start, and the MQTT setting is the right way to tighten it. A longer timer won't move brine pH. If the alkalinity data show drains need to remove more, the levers are a shorter T_int or, in the next build, a lower port or a dip tube, which is HSW's Risk 2 and outside this note.</p>
+<h2 id="two-checks-before-a-fixed-10-minute-drain-runs-unattended">Two checks before a fixed 10-minute drain runs unattended</h2>
+<h3 id="headspace-venting">Headspace venting</h3>
+<p><em>Answered 10/21: Alex confirmed the headspace isn't hermetically sealed and can vent.</em></p>
+<p>Once the port uncovers, A, B and C are closed and the D line carries only headspace gas. Nothing else feeds the venturi's suction. During generation the RO reject flowing into the mixing column satisfies most of that suction. During a drain nothing does. With no flow the model gives 30 to 70 kPa below atmospheric at the suction port for line pressures of 0 to 40 kPa. If the vessel headspace has no open vent, a 10-minute overrun pulls the vessel toward that vacuum. The vessel is 5 mm welded PP with large flat walls, and two Phoenix tanks already leak at the welds. The 5/8 drawings show a Ø8 hole in the small chamber's cover and a 110 × 30 salt slot in the brine chamber's cover. No record says whether either is open on shipped units. ARCHITECTURE.md describes the machine as sealed, with every gas path plumbed. If the vessel doesn't vent, T_drain has to stop close to the moment the port uncovers.</p>
+<h3 id="low-level-interlock">Low-level interlock</h3>
+<p>The firmware build I read, the local clone of 10 Aug, blocks generation when P17 reads low. The code is <code>level_p17_fault</code> in <code>main/AppTask.c</code> near line 840, and the event is logged as "alkaliLevel". No record gives the brine level sensor heights relative to the port. If a drain takes the level below P17, generation can't restart until makeup refills the vessel, and in that build makeup only runs once generation opens valve A. That could lock the unit out after every drain. Check the sensor heights and how the field build behaves. If a sensor does sit between normal level and the port, it would also give the drain a level-based end in place of the timer.</p>
+<h2 id="what-hsw-should-measure-on-the-bench">What HSW should measure on the bench</h2>
+<ol>
+<li><strong>Geometry.</strong> Measure the as-built venturi nozzle and throat bores. Measure the bore of the fitting in the D port and the port's centre height against the normal level, and confirm which chamber it opens into. Measure the bores of valve D, the D line, the T and the inlet check valve, and the check valve's cracking pressure.</li>
+<li><strong>Vessel area.</strong> At normal level, withdraw a measured 1 L through the D port and record the level drop at the salt slot. That gives the falling free-surface area directly and replaces the inferred 1,245 cm².</li>
+<li><strong>Shut-off vacuum.</strong> Booster on, A, B, C and D closed, and a vacuum gauge on the T's D branch. Record inches of mercury, which compares directly with the RT30 figure of 10 to 20 inHg. Repeat at each back-pressure in step 4.</li>
+<li><strong>Timed drains at set back-pressures.</strong> Run the first drain with OUT discharging to an open tank. Then fit a throttle valve and gauge on the OUT line and repeat at 20, 40 and 60 kPa. For each, start at normal level and enter Caustic drain from the screen. Read the level at the salt slot every 15 s and note when the port uncovers, which shows as air in the D line. Log flow meter A, venturi-inlet pressure and booster current at the fastest rate the firmware allows. Do three repeats each, once with water and once with brine at operating strength.</li>
+<li><strong>Overrun.</strong> After the port uncovers, keep the booster on for 2 minutes with a vacuum gauge on a spare vessel port, one of the ¼″ ports added 5/7, and watch the walls. If the headspace goes more than 2 kPa below atmospheric, stop and tell SWC.</li>
+<li><strong>Flow meter A check.</strong> With D closed and OUT to an open tank, catch the outflow in a bucket for 30 s and compare it with FL_A.</li>
+<li><strong>Alkalinity.</strong> During one 2 h run at 2 × 15 A, sample brine near the port at the start, at 2 h before the drain, after the drain, and after refill. Sample the small 210 × 100.2 chamber too. Titrate total alkalinity in mmol/L and record pH and EC with each sample. That gives hydroxide added per 2 h and removed per drain in the same units, which is the real test of the drain.</li>
+</ol>
+<h2 id="what-field-telemetry-can-confirm">What field telemetry can confirm</h2>
+<ul>
+<li><strong>Tap pressure.</strong> In standby, with the pool pump running and the booster off, flow meter A reads almost zero, so the venturi-inlet sensor reads close to the IN-tap pressure. The HK1100C spans 0 to 1.2 MPa at ±1.5 % of full scale, so ±18 kPa. That is coarse but enough to sort sites into below 30, 30 to 60 and above 60 kPa. At HASA's variable-speed test pool, log it at each pump speed.</li>
+<li><strong>End of drain.</strong> The model predicts that when the port uncovers, flow meter A rises 5 to 8 % and venturi-inlet pressure falls 7 to 11 kPa. That is small next to the sensor error and the firmware's 5 s averaging of FL_A, but as a step within one drain it may show. If the bench logs show it clearly, it could end the drain in a later build.</li>
+<li><strong>Brine response.</strong> The CAD puts the pH and EC probes in the vessel. Compare readings before the drain, after it and after refill. EC after refill shows how much brine the drain exchanged, until the salt bed re-dissolves. pH shows whether drains move the brine at all.</li>
+</ul>
+<h2 id="record-notes-for-alex">Record notes for Alex</h2>
+<ul>
+<li>NOTES.md 10/13 says the caustic port "sits only 2 cm above the normal level". HSW's Chinese gives the 2 cm gap without a direction, and HSW's own conclusion only works with the level above the port. This note reads it that way. Worth one question to Dechen.</li>
+<li>HSW's text puts valve D on a wall port of the vessel near normal level, consistent with the 8/6 CAD tie of D to the Ø26.4 port. It doesn't say which chamber, so ARCHITECTURE.md §5 row 13 stays open.</li>
+<li>Flow meter A at 6 to 8 L/min on Urim's unit is half the motive flow the pump curve and a Ø5 nozzle predict. The bench steps 1 and 6 above sort out whether the nozzle is smaller, the loop is restricted or the meter reads low.</li>
+<li>No CAD shows the June replacement venturi, so every venturi dimension here is April's.</li>
+</ul>
+<h2 id="appendix-a-model">Appendix A. Model</h2>
+<p>Symbols. Qn is motive flow through the nozzle and Qs is suction flow from the vessel. An and At are the nozzle and throat areas, R = An/At and M = Qs/Qn. ρ is pool water density and σ = ρs/ρ is the density ratio of the drained liquid. P0 is the static pressure where the jet meets the suction stream. Pressures are gauge.</p>
+<pre><code>q        = ρ Vn² / 2,   Vn = Qn / An
+Pm - P0  = (1 + Kn) q                                                  nozzle
+Ps - P0  = σ (1 + Ks) q [M R / (1 - R)]²                               suction entry
+Pd - P0  = q [2R + 2σ M² R² / (1 - R) - (1 + Ktd) R² (1 + M)(1 + σM)]  throat and diffuser
+Pm       = P_line + ρ g H(Qn) - Kloop ρ V14² / 2                       booster and motive loop
+Pd       = P_line + Kout ρmix V14out² / 2                              outlet tubing to the OUT tap
+Ps       = ρs g Δz - P_crack - Ksl ρs Vsl² / 2                         vessel surface to suction port
+</code></pre>
+<p>The script solves the throat equation for Qn at each trial Qs and then finds the Qs that satisfies the suction equation. If suction is impossible even at Qs = 0, the check valve stays shut and the drain stalls. It needs only Python 3.</p>
+<pre><code class="language-python">import math
+g, rho = 9.81, 1000.0
+# DC55E 24 V curve, L/min vs m, read off the datasheet chart
+PC = [(0,16.0),(5.5,14.6),(15.1,11.5),(22.7,8.55),(30.3,5.3),(36.0,2.5),(40.0,0.0)]
+def H(qlpm):
+    for (q1,h1),(q2,h2) in zip(PC, PC[1:]):
+        if q1 &lt;= qlpm &lt;= q2: return h1 + (h2-h1)*(qlpm-q1)/(q2-q1)
+    return PC[0][1] if qlpm &lt;= 0 else 0.0
+def area(d_mm): return math.pi/4*(d_mm/1000)**2
+A14 = area(14.0)
+
+def solve(P_line=0.0, dIN=0.0, dn=5.0, dt=7.0, Kn=0.05, Ktd=0.25, Ks=0.1, Kloop=20.0,
+          Kout=8.0, sigma=1.15, dz=0.27, Pcrack=2000.0, Ksl=10.0, dsl=6.0, Pvac=0.0, scale=1.0):
+    An, At, Asl = area(dn), area(dt), area(dsl); R = An/At; rs = rho*sigma
+    def res(Qn, Qs):
+        Vn = Qn/An; q = rho*Vn**2/2; M = Qs/Qn
+        Pm = P_line + dIN + rho*g*scale*H(Qn*60000) - Kloop*rho*(Qn/A14)**2/2
+        Pd = P_line + Kout*rho*(1+sigma*M)/(1+M)*((Qn+Qs)/A14)**2/2
+        Ps = rs*g*dz - Pcrack - Pvac - Ksl*rs*(Qs/Asl)**2/2
+        P0 = Pm - (1+Kn)*q
+        e_suc = (Ps-P0) - sigma*(1+Ks)*q*(M*R/(1-R))**2
+        e_thr = (Pd-P0) - q*(2*R + 2*sigma*M**2*R**2/(1-R) - (1+Ktd)*R**2*(1+M)*(1+sigma*M))
+        return e_suc, e_thr, P0
+    def bisect(f, lo, hi, n=100):
+        flo = f(lo)
+        for _ in range(n):
+            mid = (lo+hi)/2; fm = f(mid)
+            if (fm &gt; 0) == (flo &gt; 0): lo, flo = mid, fm
+            else: hi = mid
+        return (lo+hi)/2
+    Qmax = 40/60000
+    Qn_for = lambda Qs: bisect(lambda Qn: res(Qn, Qs)[1], 1e-6, Qmax)
+    Qn0 = Qn_for(0.0)
+    if res(Qn0, 0.0)[0] &lt;= 0:                      # no suction possible, check valve shut
+        return Qn0*60000, 0.0, res(Qn0, 0.0)[2]/1000
+    Qs = bisect(lambda Qs: res(Qn_for(Qs), Qs)[0], 0.0, 20/60000, 60)
+    return Qn_for(Qs)*60000, Qs*60000, None
+
+for P in (0, 20, 40, 60, 80):
+    Qn, Qs, _ = solve(P_line=P*1000)
+    print(f&quot;line {P:3d} kPa: motive {Qn:4.1f} L/min, suction {Qs:4.2f} L/min&quot;)
+</code></pre>
+<p>The base case prints suction of 4.0, 3.2, 2.2, 0.9 and 0 L/min at 0, 20, 40, 60 and 80 kPa. Each sensitivity row in the results table changes one keyword argument from the base.</p></article>
+</main>
+</body>
+</html>

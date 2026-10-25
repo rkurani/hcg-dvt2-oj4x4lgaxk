@@ -1,0 +1,1080 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HCG-50 Operating States</title>
+
+
+<style>
+:root{--paper:#f3f5f8;--surface:#fff;--sunk:#e9edf2;--ink:#142231;--muted:#566474;--rule:#d3dae2;--navy:#1f3864;
+--navy-ink:#fff;--navy-muted:#b9c6dc;--zh:#0067b3;--link:#1d4f9c;--hl:#fff2cc;--focus:#2a6fd6;
+--f-display:"Archivo","Arial Narrow",Arial,sans-serif;--f-body:"IBM Plex Sans","Noto Sans SC",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+--f-zh:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;
+--muted:#9babbb;--rule:#2a3744;--navy:#172742;--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;--muted:#9babbb;--rule:#2a3744;--navy:#172742;
+--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--f-body)}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:var(--link);text-underline-offset:2px}a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.mast{background:var(--navy);color:var(--navy-ink)}header.mast .wrap{padding-block:20px 16px}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--navy-muted)}
+h1{font-family:var(--f-display);font-stretch:86%;font-weight:700;font-size:1.75rem;line-height:1.1;margin:4px 0 0;text-wrap:balance}
+h1 .zh{display:block;font-size:.6em;font-weight:500;color:var(--navy-muted);margin-top:6px;font-family:var(--f-zh)}
+.src{font-size:.82rem;color:var(--navy-muted);margin-top:10px;max-width:90ch}
+main{padding-block:20px 60px}
+.zh{color:var(--zh);font-family:var(--f-zh)}
+.tw{background:var(--surface);border:1px solid var(--rule);border-radius:8px;overflow-x:auto}
+table.hsw{width:100%;border-collapse:collapse;font-size:.85rem}
+.hsw th{text-align:left;vertical-align:bottom;background:var(--sunk);color:var(--muted);font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--rule)}
+.hsw th .zh{display:block;text-transform:none;letter-spacing:0;font-weight:500}
+.hsw td{vertical-align:top;padding:10px;border-bottom:1px solid var(--rule);overflow-wrap:anywhere;min-width:5.5rem}
+.hsw td.idc{font-family:var(--f-mono);font-weight:500;white-space:nowrap;min-width:0}
+.hsw td.wide{min-width:16rem}
+.hsw tr:target td{background:var(--hl)}
+.hsw tr:target td.idc{box-shadow:inset 4px 0 0 var(--link)}
+.pic{color:var(--muted);font-style:italic;font-size:.8rem}
+.doc{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:8px 28px 28px;max-width:1100px}
+.doc h1,.doc h2,.doc h3{font-family:var(--f-display);font-stretch:90%;line-height:1.2;text-wrap:balance}
+.doc h1{font-size:1.6rem;color:var(--ink)}.doc h2{font-size:1.25rem;margin-top:2rem;padding-bottom:4px;border-bottom:2px solid var(--ink)}.doc h3{font-size:1.05rem;margin-top:1.4rem}
+.doc p,.doc li{max-width:80ch}
+.doc .tbl{overflow-x:auto;margin:12px 0}
+.doc table{border-collapse:collapse;font-size:.84rem;min-width:100%}
+.doc th,.doc td{border:1px solid var(--rule);padding:6px 8px;vertical-align:top;text-align:left}
+.doc th{background:var(--sunk)}
+.doc tr:target td{background:var(--hl)}
+.doc code{font-family:var(--f-mono);font-size:.86em;background:var(--sunk);padding:1px 4px;border-radius:3px}
+.doc pre{background:var(--sunk);padding:12px;border-radius:6px;overflow-x:auto;font-size:.8rem}
+.doc pre code{background:none;padding:0}
+.doc blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid var(--link);background:var(--sunk)}
+.doc pre.mermaid{background:var(--surface);text-align:center}
+.doc del{color:var(--muted)}
+.cut{font-size:.85rem;color:var(--muted);border:1px dashed var(--rule);border-radius:6px;padding:8px 12px;margin:14px 0}
+@media (max-width:760px){h1{font-size:1.4rem}.doc{padding:4px 14px 18px}
+ table.hsw,.hsw tbody,.hsw tr,.hsw td{display:block}.hsw thead{display:none}
+ .hsw tr{border-bottom:1px solid var(--rule);padding:10px 12px}.hsw td{border:0;padding:3px 0;min-width:0}
+ .hsw td[data-k]::before{content:attr(data-k);display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+ .hsw td:empty{display:none}}
+</style>
+<script defer src="mermaid.min.js"></script><script>document.addEventListener("DOMContentLoaded",function(){var d=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;if(window.mermaid){mermaid.initialize({startOnLoad:false,theme:d?"dark":"default",securityLevel:"strict"});mermaid.run({querySelector:"pre.mermaid"});}});</script>
+</head>
+<body>
+<header class="mast"><div class="wrap">
+<div class="eyebrow">SWC · firmware baseline for DVT2</div>
+<h1>Operating states and actuator table<span class="zh">运行状态与执行器表</span></h1>
+<div class="src">From <code>DVT/DVT1/Firmware/HCG-50 operating states 2026-10-19.md</code> in the shared repo, rendered as it stands on 21 October, with internal register IDs left out.</div>
+</div></header>
+<main class="wrap">
+<article class="doc"><h1 id="hcg-50-operating-states-and-actuator-table">HCG-50 operating states and actuator table</h1>
+<p><strong>Date:</strong> 2026-10-19
+<strong>From:</strong> Alex Valeyev, with Claude
+<strong>For:</strong> Urim Veselaj for the caustic-drain firmware (Jira HCG-351), and HSW and Incodeks for the next-build controls definition
+<strong>Status:</strong> draft for Alex's review. Not committed.
+<strong>Corrected 2026-10-21:</strong> the four level sensors sit in the caustic chamber and read the level both chambers share (section 1, D5, R3, O12), HSW's 2026-10-16 risk statement gives the tank heights (O5), and Alex closed O6. See <code>NOTES.md</code> 10/21.
+<strong>Diagram:</strong> HCG-50 operating states 2026-10-19.html, with <code>.svg</code> and <code>.png</code> exports beside it</p>
+<h2 id="what-this-is">What this is</h2>
+<p>This document says what every actuator on a DVT unit should do in each operating state, how the unit moves from one state to the next, and which rules hold in all of them. Section 8 then lists every place the current firmware does something different.</p>
+<p>The spec has two sources. Alex wrote Caustic drain, Chlorine generation and Generation shutdown on 10/14. A three-round review on 10/19 settled the rest. Section 7 records each decision, and every cell in the table below cites the spec or a decision. Where the firmware or an older record disagrees, this spec wins and the difference goes in section 8.</p>
+<p>The firmware check is a source read of <code>standardwater/mainboard</code>. Nothing was compiled or run. Two builds were read:</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Build</th>
+<th>Role</th>
+<th>Commit</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1.10.119</td>
+<td>Field candidate</td>
+<td><code>2c2f354</code>, 9/10, on <code>main</code></td>
+<td></td>
+</tr>
+<tr>
+<td>v1.10.132</td>
+<td>Newest, run by aging plan V3.x</td>
+<td><code>dbea6b8</code>, on <code>feature/chemistry-sensor-temperature</code></td>
+<td>Committed 10/13 and not merged to <code>main</code>. The Confluence OTA bin is dated 9/18 and the CHANGELOG entry 9/21, so nobody has yet shown this commit is the bin HSW tested. See HCG-342.</td>
+</tr>
+</tbody>
+</table></div>
+<p>The behaviour this document cares about is the same in both builds except where section 8 says otherwise. v1.10.132 changed the start sequence and the scope of the flow and pressure faults. Nothing else in the state logic moved.</p>
+<p>The table assumes four ball valves, because that's what the firmware drives and the CAD shows. Standing decision 7 and HCG-324 say the shipped batch went from three gas-line valves to one. If the shipped set differs, the B and C rows change.</p>
+<h2 id="1-outputs-and-inputs">1. Outputs and inputs</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Output</th>
+<th>Firmware</th>
+<th>What it does</th>
+<th>Unpowered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valve A</td>
+<td>BV_A, TCA9535 P00</td>
+<td>Water inlet. Feeds the filters and RO, so it gates RO permeate (brine makeup) and RO reject (into the mixing column) together</td>
+<td>Closed, capacitor return</td>
+</tr>
+<tr>
+<td>Valve B</td>
+<td>BV_B, P01</td>
+<td>Mixing column outlet to the venturi T. Carries Cl₂ and RO reject</td>
+<td>Closed, capacitor return</td>
+</tr>
+<tr>
+<td>Valve C</td>
+<td>BV_C, P02</td>
+<td>H₂ from the caustic chamber to the venturi T</td>
+<td>Closed, capacitor return</td>
+</tr>
+<tr>
+<td>Valve D</td>
+<td>BV_D, P03</td>
+<td>Caustic discharge to the venturi T</td>
+<td>Closed, capacitor return</td>
+</tr>
+<tr>
+<td>Pinch valve</td>
+<td>P04</td>
+<td>Brine makeup, RO permeate into the salt chamber. Normally open part, P25NO24-05</td>
+<td>Open</td>
+</tr>
+<tr>
+<td>Booster pump</td>
+<td>P06</td>
+<td>Drives the venturi. Nothing reaches the pool without it</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Electrodes</td>
+<td>CH1 and CH2 enable plus PWM</td>
+<td>Cell current</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Cell SSRs</td>
+<td>P10 and P11, since v1.9.96</td>
+<td>Cut AC to the two cell supplies</td>
+<td>Open, fail-open</td>
+</tr>
+<tr>
+<td>Brine pump</td>
+<td>P07</td>
+<td>Not fitted on DVT. Stays off</td>
+<td>Off</td>
+</tr>
+</tbody>
+</table></div>
+<p>The inputs used here are the leak sensor on P05, flow meter A (FL_A) and the pressure sensor at the venturi inlet, and four level sensors on P14 to P17. P14 is the lowest and P17 the highest. The sensors sit in the caustic chamber and read the level it shares with the brine chamber, so this spec calls them brine level sensors by function. The IO doc names P10 to P13 for the brine (salt) tank sensors and P14 to P17 for the alkali tank. The salt-tank sensors were never fitted, and P10 to P13 became relay outputs in v1.9.94. <em>(Corrected 2026-10-21. The 10/19 text said the caustic tank had no level sensing and called P10 to P13 its inputs.)</em></p>
+<p>The records disagree on where A and B sit. The firmware and the 8/6 CAD review put A on the water inlet. The PCB schematic V2 labels J26 "Brine Tank Inlet", and ARCHITECTURE.md §4.1 draws A between the brine tank and the cell. Alex placed B at the mixing column outlet on 10/19. ARCHITECTURE.md §4.1 and the 10/14 handoff put it between the gas-liquid separator and the column. This spec follows the firmware for A and Alex for B. Photographing the valves, NOTES Dashboard item 13, settles both.</p>
+<h2 id="2-state-by-component-table">2. State by component table</h2>
+<p>S is Alex's 10/14 spec, and bold text is his wording. D1 to D19 are the 10/19 decisions in section 7. The two Fault columns and Power loss sit apart from the five spec states.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Output</th>
+<th>Standby</th>
+<th>Chlorine generation</th>
+<th>Generation shutdown, 180 s</th>
+<th>Caustic drain, T_drain</th>
+<th>Caustic drain shutdown, flush</th>
+<th>Fault, hydraulic</th>
+<th>Fault, electrical or brine low</th>
+<th>Power loss</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valve A, inlet</td>
+<td>Closed. D4</td>
+<td><strong>Open.</strong> S</td>
+<td><strong>Open.</strong> S</td>
+<td><strong>Closed.</strong> S</td>
+<td>Open. D10</td>
+<td>Closed. D12</td>
+<td>Closed. D12</td>
+<td>Closed. D13</td>
+</tr>
+<tr>
+<td>Valve B, column outlet</td>
+<td>Closed. D1</td>
+<td>Open. D1</td>
+<td>Open. D1</td>
+<td>Closed. D1, D11</td>
+<td>Open. D10</td>
+<td>Closed. D12</td>
+<td>Open for T_fault, then closed. D12, D19</td>
+<td>Closed. D13</td>
+</tr>
+<tr>
+<td>Valve C, H₂</td>
+<td>Closed. D4</td>
+<td><strong>Open.</strong> S</td>
+<td><strong>Open.</strong> S</td>
+<td><strong>Closed.</strong> S</td>
+<td>Closed. D10</td>
+<td>Closed. D12</td>
+<td>Open for T_fault, then closed. D12, D19</td>
+<td>Closed. D13</td>
+</tr>
+<tr>
+<td>Valve D, caustic</td>
+<td>Closed. D4</td>
+<td><strong>Closed.</strong> S</td>
+<td><strong>Closed.</strong> S</td>
+<td><strong>Open.</strong> S</td>
+<td>Closed. D10</td>
+<td>Closed. D12</td>
+<td>Closed. D12</td>
+<td>Closed. D13</td>
+</tr>
+<tr>
+<td>Booster pump</td>
+<td>Off. D4</td>
+<td><strong>On.</strong> S</td>
+<td>On. D2</td>
+<td><strong>On.</strong> S</td>
+<td>On. D2, D10</td>
+<td>Off. D12</td>
+<td>On for T_fault, then off. D12, D19</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Electrodes, enable and PWM</td>
+<td>Off. D4</td>
+<td><strong>On.</strong> S</td>
+<td><strong>Off.</strong> S</td>
+<td><strong>Off.</strong> S</td>
+<td>Off. D10</td>
+<td>Off, first step. D12</td>
+<td>Off, first step. D12</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Cell SSRs, P10 and P11</td>
+<td>Open. D4</td>
+<td>Closed, and only after the flow check. D6</td>
+<td>Open. S</td>
+<td>Open. S</td>
+<td>Open. S</td>
+<td>Open, first step. D12</td>
+<td>Open, first step. D12</td>
+<td>Open. D13</td>
+</tr>
+<tr>
+<td>Pinch valve</td>
+<td>Unpowered, so open. A is closed, so nothing flows. D7</td>
+<td>Open. Powered closed at P17 for up to 15 s. D7, D17</td>
+<td>As in generation. D7, D17</td>
+<td>Unpowered. A is closed. D7</td>
+<td>As in generation. D7, D17</td>
+<td>Unpowered</td>
+<td>Unpowered</td>
+<td>Open. D13</td>
+</tr>
+</tbody>
+</table></div>
+<p>Notes on the table:</p>
+<ul>
+<li><strong>Cells off includes the SSRs.</strong> Every "Off" for the electrodes means PWM at zero, cell enable low and both SSRs open.</li>
+<li><strong>The electrical fault column clears gas only if the fault arrives while gas is in the lines,</strong> from Chlorine generation or Generation shutdown. From any other state it goes straight to everything closed and off. That split is derived from D12, not decided outright.</li>
+<li><strong>P17 handling is the brine-high hold in section 3, row T10.</strong> The pinch closes for at most 15 s, then A closes and the pinch is released. It never stays powered closed long enough to hit the blockage Urim reported, open item O1.</li>
+<li><strong>Restart lockout is a flag on Standby, not a state.</strong> The outputs are the same as Standby. Section 6 covers it.</li>
+</ul>
+<h2 id="3-transitions">3. Transitions</h2>
+<pre class="mermaid">stateDiagram-v2
+    direction LR
+    state &quot;Standby&quot; as SB
+    state &quot;Standby, restart lockout&quot; as LO
+    state &quot;Chlorine generation&quot; as GEN
+    state &quot;Brine-high hold&quot; as BH
+    state &quot;Generation shutdown, 180 s&quot; as GSD
+    state &quot;Caustic drain, T_drain&quot; as DR
+    state &quot;Caustic drain shutdown, flush&quot; as DSD
+    state &quot;Fault&quot; as F
+
+    [*] --&gt; SB: boot, power lost in Standby
+    [*] --&gt; LO: boot, power lost mid-run
+    LO --&gt; SB: checked, cleared by MQTT or on site
+    SB --&gt; GEN: start, no drain owed
+    SB --&gt; DR: start with drain owed, or manual drain
+    GEN --&gt; BH: P17 wet
+    BH --&gt; GEN: P17 dry for 120 s
+    GEN --&gt; GSD: any stop, or T_int
+    GSD --&gt; SB: user stop, sets drain owed
+    GSD --&gt; DR: automated end, or T_int
+    DR --&gt; DSD: T_drain, or user stop
+    DSD --&gt; GEN: run continues
+    DSD --&gt; SB: run over, clears drain owed
+    GEN --&gt; F: fault
+    GSD --&gt; F: fault
+    DR --&gt; F: fault
+    DSD --&gt; F: fault
+    F --&gt; SB: fault clears
+</pre>
+<h3 id="stop-sources">Stop sources</h3>
+<p>D16 sorts the ways a run can end into two kinds. An automated end drains. A user stop doesn't, and sets drain owed so the next start drains first.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Kind</th>
+<th>After Generation shutdown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Auto schedule window closes</td>
+<td>Automated end</td>
+<td>Caustic drain</td>
+</tr>
+<tr>
+<td>TimerOn expires</td>
+<td>Automated end</td>
+<td>Caustic drain</td>
+</tr>
+<tr>
+<td>MQTT <code>serverStandby</code></td>
+<td>Automated end</td>
+<td>Caustic drain</td>
+</tr>
+<tr>
+<td>T_int reached mid-run</td>
+<td>Mid-run drain</td>
+<td>Caustic drain, then generation resumes</td>
+</tr>
+<tr>
+<td>Screen OFF, or a mode change on the screen</td>
+<td>User stop</td>
+<td>Standby, drain owed set</td>
+</tr>
+<tr>
+<td>MQTT <code>SetControlMode</code> to standby</td>
+<td>User stop</td>
+<td>Standby, drain owed set</td>
+</tr>
+<tr>
+<td>Server-mode comms timeout</td>
+<td>Not a stop</td>
+<td>The unit keeps working offline. How Server mode behaves offline is open, O3</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="transition-table">Transition table</h3>
+<p>Step order matters. Valves open before the booster starts, the booster and a flow check come before the cells, and the cells go off before the inlet closes. Where a step order below goes beyond what a decision says, the source column marks it as derived.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>From and to</th>
+<th>Trigger</th>
+<th>Guard</th>
+<th>Steps, in order</th>
+<th>Dwell</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr id="T1">
+<td>T1</td>
+<td>Standby to Chlorine generation</td>
+<td>Start request: screen, <code>SetControlMode</code>, schedule window opens, <code>TimerOn</code>, <code>serverGenerate</code></td>
+<td>No fault latched. Restart lockout clear. Drain owed clear, otherwise T2 runs first</td>
+<td>1. Open B and C, confirm D closed. 2. Open A. 3. Booster on. 4. Wait T_settle. 5. Check FL_A at or above its threshold and pressure below 1.05 MPa. Hold here until both pass. 6. Close the SSRs. 7. Wait the SSR-to-enable delay. 8. Enable the cells and bring PWM to setpoint</td>
+<td>Cells on no sooner than T_settle plus the SSR delay after the booster starts. No limit at step 5, because a FL_A fault ends a hold that never clears</td>
+<td>D6. B before A is derived from interlock I2</td>
+</tr>
+<tr id="T2">
+<td>T2</td>
+<td>Standby to Caustic drain</td>
+<td>Start request while drain owed is set, or a manual drain command</td>
+<td>No fault latched. Restart lockout clear. A, B and C closed</td>
+<td>1. Booster on. 2. Wait T_settle and check FL_A. 3. Open D. Start T_drain</td>
+<td>D opens only once the venturi has motive flow</td>
+<td>D9, Q9. Booster before D is derived from I3, so caustic never sits in a still T</td>
+</tr>
+<tr id="T3">
+<td>T3</td>
+<td>Chlorine generation to Generation shutdown</td>
+<td>Any stop in the table above, or T_int reached</td>
+<td>None</td>
+<td>1. PWM to zero and cells disabled. 2. Open the SSRs. 3. A, B and C stay open, booster stays on, D stays closed. Start T_genSD</td>
+<td>Exactly T_genSD, 180 s, unless a fault cuts in</td>
+<td>S, D3</td>
+</tr>
+<tr id="T4">
+<td>T4</td>
+<td>Generation shutdown to Standby</td>
+<td>T_genSD elapsed after a user stop</td>
+<td>None</td>
+<td>1. Close A. 2. Close B and C, booster off. 3. Set drain owed. 4. Clear the running marker</td>
+<td></td>
+<td>D9. A before B is derived from I2</td>
+</tr>
+<tr id="T5">
+<td>T5</td>
+<td>Generation shutdown to Caustic drain</td>
+<td>T_genSD elapsed after an automated end or T_int</td>
+<td>None</td>
+<td>1. Close A. 2. Close B and C. The booster stays on. 3. Open D. Start T_drain</td>
+<td>D never opens before the full 180 s</td>
+<td>S, D5</td>
+</tr>
+<tr id="T6">
+<td>T6</td>
+<td>Caustic drain to Caustic drain shutdown</td>
+<td>T_drain elapsed, or a user stop during the drain</td>
+<td>None</td>
+<td>1. Close D. 2. Open B. 3. Open A. The booster stays on. Start T_flush. After a user stop, drain owed stays set because the drain didn't finish</td>
+<td>T_drain is both the minimum and the maximum unless a user stops it</td>
+<td>D8, D10, Q9</td>
+</tr>
+<tr id="T7">
+<td>T7</td>
+<td>Caustic drain shutdown to Standby</td>
+<td>T_flush elapsed and the run is over</td>
+<td>None</td>
+<td>1. Close A. 2. Close B, booster off. 3. Clear drain owed, unless the drain was cut short, and reset the T_int count. 4. Clear the running marker</td>
+<td>T_flush, about 60 s</td>
+<td>D10</td>
+</tr>
+<tr id="T8">
+<td>T8</td>
+<td>Caustic drain shutdown to Chlorine generation</td>
+<td>T_flush elapsed and a run continues, after a T_int drain or a drain owed at start</td>
+<td>Start request still active. No fault</td>
+<td>1. Clear drain owed and reset the T_int count. 2. Open C. A and B are already open and the booster is running. 3. Carry on from T1 step 4</td>
+<td>Cells wait T_settle again</td>
+<td>D5, D9, D10</td>
+</tr>
+<tr id="T9">
+<td>T9</td>
+<td>Any running state to Fault, hydraulic</td>
+<td>Leak on P05. FL_A below threshold for 2 samples once the booster has run T_settle. Pressure at or above 1.05 MPa for 3 samples. Pressure outside the warning band while the cells are on</td>
+<td>None</td>
+<td>1. PWM to zero, cells disabled, SSRs open. 2. Close A, B, C and D, booster off. 3. Set drain owed if the cells ran since the last drain</td>
+<td>Latched until the condition clears</td>
+<td>D12</td>
+</tr>
+<tr id="T10">
+<td>T10</td>
+<td>Brine-high hold, inside Chlorine generation, Generation shutdown or Caustic drain shutdown</td>
+<td>P17 wet while A is open</td>
+<td>None</td>
+<td>1. Power the pinch closed. 2. In Chlorine generation, PWM to zero, cells disabled and SSRs open. A, B and C stay open and the booster runs. 3. If P17 is still wet after T_p17, close A and release the pinch. The booster keeps running with B and C open. 4. Once P17 has read dry for T_hold: from Chlorine generation, restart through T1 from step 2. From the other two states, carry on with that state's own sequence</td>
+<td>Pinch closed for at most T_p17, 15 s. Hold exits after T_hold, 120 s, of dry P17. No maximum time in the hold yet, O4</td>
+<td>D7, D14, D17</td>
+</tr>
+<tr id="T11">
+<td>T11</td>
+<td>Any running state to Fault, electrical or brine low</td>
+<td>Cell current at or above 22 A for 60 s. P14 dry, brine low</td>
+<td>None</td>
+<td>1. PWM to zero, cells disabled, SSRs open. 2. Close A and D. 3. If the fault arrived from Chlorine generation or Generation shutdown, keep the booster on with B and C open for T_fault. 4. Close B and C, booster off. 5. Set drain owed if the cells ran since the last drain</td>
+<td>T_fault, 180 s</td>
+<td>D12, D19. The condition in step 3 is derived</td>
+</tr>
+<tr id="T12">
+<td>T12</td>
+<td>Fault to Standby</td>
+<td>The fault condition clears</td>
+<td>None</td>
+<td>Confirm every output is off or closed. Stay in Standby until a new start request. Drain owed is kept</td>
+<td></td>
+<td>Current firmware behaviour, kept</td>
+</tr>
+<tr id="T13">
+<td>T13</td>
+<td>Any state, power lost</td>
+<td>Supply lost</td>
+<td>Hardware only</td>
+<td>SSRs open. Ball valves close on their capacitors. Booster and cells stop. The pinch opens</td>
+<td></td>
+<td>D13</td>
+</tr>
+<tr id="T14">
+<td>T14</td>
+<td>Boot</td>
+<td>Power restored, or a reset</td>
+<td>None</td>
+<td>1. All outputs low, as the firmware already does. 2. Running marker clear: restore the saved work mode, no alert. 3. Running marker set: work mode Standby, publish the improper-shutdown alert with the reset reason and the state the unit was in, set drain owed and set restart lockout</td>
+<td></td>
+<td>D13, D18</td>
+</tr>
+<tr id="T15">
+<td>T15</td>
+<td>Restart lockout cleared</td>
+<td>MQTT command, or an action on the screen on site, after someone has checked the unit</td>
+<td>None</td>
+<td>Clear the lockout. The unit stays in Standby. Drain owed stays set, so the next start drains first through T2</td>
+<td></td>
+<td>D18</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="4-interlocks">4. Interlocks</h2>
+<p>These hold in every state. They restate I1 to I6 from the 8/8 field note for DVT valve names, and add the ones the 10/19 decisions need. The field note's <code>V_MC</code>, a column outlet valve, is valve B on DVT.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Rule</th>
+<th>Prevents</th>
+<th>From</th>
+</tr>
+</thead>
+<tbody>
+<tr id="I1">
+<td>I1</td>
+<td>Cells enabled or SSRs closed only if A, B and C are open, D is closed, the booster is running, the FL_A and pressure check has passed after T_settle, no fault is latched and P17 is dry</td>
+<td>Cl₂ generated into a dead-ended or still line</td>
+<td>8/8 I1, D6</td>
+</tr>
+<tr id="I2">
+<td>I2</td>
+<td>A open only while B is open. Outside T1 steps 2 and 3, A open also needs the booster running</td>
+<td>RO reject filling the column and backing up through the separator into the brine tank</td>
+<td>8/8 I2</td>
+</tr>
+<tr id="I3">
+<td>I3</td>
+<td>D open only if A, B and C are closed, the cells are off with the SSRs open, and the booster has run for at least T_settle</td>
+<td>Caustic drawn alongside Cl₂, or caustic left in a still T</td>
+<td>8/8 I3, I4</td>
+</tr>
+<tr id="I4">
+<td>I4</td>
+<td>Booster off only with A and D closed and the cells off with the SSRs open</td>
+<td>Inlet water or caustic with no motive flow to carry it</td>
+<td>8/8 I4</td>
+</tr>
+<tr id="I5">
+<td>I5</td>
+<td>D opens only after a full Generation shutdown since the cells were last on, or from Standby</td>
+<td>Remnant Cl₂ in the column meeting caustic</td>
+<td>8/8 I5, D3</td>
+</tr>
+<tr id="I6">
+<td>I6</td>
+<td>The pinch is powered closed only while A is open and P17 is wet, and for no longer than T_p17 at a time</td>
+<td>The blockage Urim sees with the pinch held closed, and powering a valve that does nothing with A shut</td>
+<td>D7, D17</td>
+</tr>
+<tr id="I7">
+<td>I7</td>
+<td>In any stop or fault, the cells and SSRs go off before any valve closes</td>
+<td>Cells energised against a closing inlet</td>
+<td>Handoff ordering rule, D12</td>
+</tr>
+<tr id="I8">
+<td>I8</td>
+<td>No start while a fault or the restart lockout is latched</td>
+<td>Unattended restart after a fault or a power cut mid-run</td>
+<td>D13, D18</td>
+</tr>
+<tr id="I9">
+<td>I9</td>
+<td>Standby actively commands A, B, C and D closed, the booster off and the SSRs open</td>
+<td>A valve left open from the factory test page</td>
+<td>D4</td>
+</tr>
+</tbody>
+</table></div>
+<p>The 8/8 note's I6, a hardware check valve downstream of the gas-liquid separator, isn't a firmware rule. </p>
+<h2 id="5-timers-and-settings">5. Timers and settings</h2>
+<p>D8 and D19 make the drain timers and the fault timer settable over MQTT without a reflash. This spec extends that to every sequence timer, using the pattern Urim already uses for <code>setFlowALowThreshold</code>: an MQTT command, a range check, and storage in NVS that survives a reboot. Alex to confirm the extension in review.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>What it sets</th>
+<th>From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T_settle</td>
+<td>20 s</td>
+<td>Booster running before the flow and pressure check, and before D opens</td>
+<td>D6</td>
+</tr>
+<tr>
+<td>SSR-to-enable delay</td>
+<td>TBD, Urim</td>
+<td>Supply settling between the SSRs closing and the cells being enabled</td>
+<td>D6, O2</td>
+</tr>
+<tr>
+<td>T_genSD</td>
+<td>180 s</td>
+<td>Generation shutdown</td>
+<td>D3</td>
+</tr>
+<tr>
+<td>T_drain</td>
+<td>10 min</td>
+<td>Caustic drain</td>
+<td>D8</td>
+</tr>
+<tr>
+<td>T_flush</td>
+<td>60 s</td>
+<td>Caustic drain shutdown</td>
+<td>D10</td>
+</tr>
+<tr>
+<td>T_int</td>
+<td>2 h of cells-on time</td>
+<td>Longest generation stretch before a mid-run drain. Counts cells-on time since the last completed drain</td>
+<td>D5, D8</td>
+</tr>
+<tr>
+<td>T_fault</td>
+<td>180 s</td>
+<td>Gas clear after an electrical or brine-low fault</td>
+<td>D19</td>
+</tr>
+<tr>
+<td>T_p17</td>
+<td>15 s</td>
+<td>Longest the pinch stays powered closed before A closes</td>
+<td>D17</td>
+</tr>
+<tr>
+<td>T_hold</td>
+<td>120 s</td>
+<td>P17 dry time before the brine-high hold ends</td>
+<td>D17</td>
+</tr>
+<tr>
+<td>FL_A low threshold</td>
+<td>Existing, <code>setFlowALowThreshold</code></td>
+<td>Flow check and FL_A fault</td>
+<td>Firmware v1.9.108 onward</td>
+</tr>
+<tr>
+<td>Pressure warning band</td>
+<td>Existing, 0.02 to 1.0 MPa</td>
+<td>Pressure fault while the cells are on</td>
+<td>Firmware v1.10.124 onward</td>
+</tr>
+</tbody>
+</table></div>
+<p>The separate drain-rate estimate puts the time to uncover the D port at 1 to 3 minutes at a typical site. That makes 10 minutes safe, but probably 3 to 10 times longer than needed. See <code>Caustic drain rate estimate 2026-10-19.md</code>.</p>
+<h2 id="6-flags-kept-across-power-loss">6. Flags kept across power loss</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Set when</th>
+<th>Cleared when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Drain owed</td>
+<td>A run ends without a completed drain: a user stop, a fault, a user stop during the drain, or an improper shutdown</td>
+<td>Caustic drain shutdown completes after a full T_drain</td>
+</tr>
+<tr>
+<td>Running marker</td>
+<td>The unit leaves Standby</td>
+<td>The unit reaches Standby</td>
+</tr>
+<tr>
+<td>Restart lockout</td>
+<td>Boot finds the running marker set</td>
+<td>MQTT command or an on-site screen action, after someone checks the unit</td>
+</tr>
+<tr>
+<td>T_int count</td>
+<td>Counts cells-on seconds</td>
+<td>Reset when a drain completes</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="7-decisions-record">7. Decisions record</h2>
+<p>S. 2026-10-14. Alex's spec for Caustic drain, Chlorine generation and Generation shutdown, quoted in <code>handoffs/2026-10-14-hcg50-operating-states-table.md</code>.</p>
+<ol>
+<li>2026-10-19. Valve B is open only in Chlorine generation and Generation shutdown, to clear remnant Cl₂, and closed otherwise so the venturi pulls hard on D. D10 opens it again for the flush.</li>
+<li>2026-10-19. The booster runs during Generation shutdown and in every state that sends material back to the pool. Without it the venturi has no suction.</li>
+<li>2026-10-19. Generation shutdown is a fixed 180 s. Its only job is clearing remnant Cl₂. The dead "solenoid close time" screen setting goes.</li>
+<li>2026-10-19. Standby has A, B, C and D closed, the booster off, the cells off and the SSRs open. C can close because nothing makes H₂ with the cells off, and Generation shutdown already cleared the lines.</li>
+<li>2026-10-19. The caustic drains at the end of each run, and every T_int, about 2 h, during long runs. P14 to P17 are brine sensors, so the caustic tank has no level sensing. <em>(Second sentence corrected 2026-10-21: P14 to P17 sit in the caustic chamber and read the shared level, so DVT1 has no caustic level separate from the brine. The timer drain stands as Alex's choice. HSW's 2026-10-16 Plan B would end a drain when level sensors B and C drop out.)</em></li>
+<li>2026-10-19. Start order: valves, then the booster, then about 20 s for the hydraulics to reach steady state, then the flow and pressure check, then the SSRs, then the cells.</li>
+<li>2026-10-19. The pinch stays open and closes when brine reaches P17. Valve A gates makeup, since it controls RO permeate and reject together. Urim reports that a pinch closed for more than about 20 s blocks the rest of the hardware. That needs troubleshooting, O1.</li>
+<li>2026-10-19. T_int and T_drain are settable without a reflash. T_drain starts at 10 min. The drain-rate calculation became its own task, now <code>Caustic drain rate estimate 2026-10-19.md</code>.</li>
+<li>2026-10-19. A user stop runs Generation shutdown and goes straight to Standby without draining. A stored drain-owed flag makes the next start run the drain first.</li>
+<li>2026-10-19. Caustic drain shutdown flushes the venturi with RO reject through the mixing column. D closes, A and B open, the booster runs for about 60 s, then everything shuts down.</li>
+<li>2026-10-19. B sits between the mixing column outlet and the venturi. With B and C closed all suction is on the caustic tank. If the caustic drops below the outlet, the venturi pulls air and sends bubbles to the pool, which isn't a critical failure. No hardware change.</li>
+<li>2026-10-19. Hydraulic faults turn off the cells and open the SSRs first, then close the valves and stop the booster. Electrical and brine-level faults open the SSRs and close A, and the booster keeps running to clear gas. Without RO reject flowing that clearing is only partial.</li>
+<li>2026-10-19. All four ball valves fail closed on a capacitor. A restart comes up in Standby, publishes an improper-shutdown alert, and sets drain owed. DMT needs a notification for the alert.</li>
+<li>2026-10-19. At P17, the pinch closes. Cutting generation while the booster keeps running is the safer choice, and closing A is the escalation. D17 sets the details.</li>
+<li>2026-10-19. The cell SSRs use the pins v1.9.96 set up. The code drives P10 and P11 in v1.9.96, v1.10.119 and v1.10.132.</li>
+<li>2026-10-19. Schedule end, TimerOn expiry and <code>serverStandby</code> drain at the end of the run. Screen OFF, mode changes and <code>SetControlMode</code> to standby don't, and set drain owed. A server comms timeout isn't a stop, because the unit has to keep working offline.</li>
+<li>2026-10-19. The brine-high hold runs as in T10, with T_p17 at 15 s and T_hold at 120 s.</li>
+<li>2026-10-19. Power lost while in Standby: resume as normal. Power lost during generation or a drain sequence: the unit has to be checked before it runs again. Checking and clearing the flags works over MQTT as well as on site.</li>
+<li>2026-10-19. The fault gas clear runs 180 s, settable over MQTT so it can be tuned without a new build.</li>
+</ol>
+<h2 id="8-firmware-discrepancy-report">8. Firmware discrepancy report</h2>
+<p>Every row compares the settled spec with v1.10.119 (<code>2c2f354</code>) and v1.10.132 (<code>dbea6b8</code>). Line numbers are for <code>main/AppTask.c</code> in each build unless another file is named. Severity is Safety for gas release, energised cells or pressure, Function for drain, scaling or brine contamination, and Record where the docs disagree with the code.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Settled spec</th>
+<th>v1.10.119, field candidate</th>
+<th>v1.10.132, newest</th>
+<th>Where in the code</th>
+<th>Effect on a unit</th>
+<th>Severity</th>
+<th>Suggested change for Urim</th>
+</tr>
+</thead>
+<tbody>
+<tr id="X1">
+<td>X1</td>
+<td>Cell SSRs at start</td>
+<td>Close only after the flow and pressure check, just before the cells are enabled. D6</td>
+<td>P10 and P11 close at start stage 1, before any valve opens or the booster runs, 20 s before the cells</td>
+<td>Same, about 28 s before the cells</td>
+<td><code>run_generate_startup_sequence()</code>, stage 0. v119 l.391, v132 l.456</td>
+<td>The cell supplies are live while nothing flows and B and C are still closed. They can't regulate below about 10% current (HCG-349), so the cells can trickle into dead-ended lines</td>
+<td>Safety</td>
+<td>Move <code>relay(RELAY_ON, 10)</code> and <code>(11)</code> into the stage that enables the cells, after the check, with a settable delay before <code>set_cell_enable()</code></td>
+</tr>
+<tr id="X2">
+<td>X2</td>
+<td>Flow check before the cells</td>
+<td>Booster runs T_settle, 20 s, then FL_A and pressure must pass. D6</td>
+<td>Booster and both cells come on in the same step. No check</td>
+<td>8 s wait (<code>GENERATE_STAGE3_WAIT_MS</code> = 8000), then the check, holding until it passes</td>
+<td><code>run_generate_startup_sequence()</code>. v132 l.105 for the constant</td>
+<td>v1.10.119 can energise the cells with no flow. v1.10.132 checks after 8 s, where the spec wants 20 s</td>
+<td>Safety in v1.10.119, Function in v1.10.132</td>
+<td>Keep v1.10.132's stage 3 and 4. Set the wait to 20 s and make it settable</td>
+</tr>
+<tr id="X3">
+<td>X3</td>
+<td>Fault sequence</td>
+<td>Two kinds. Hydraulic: cells and SSRs off, then A to D closed and booster off. Electrical or brine low: cells and SSRs off, A and D closed, booster on with B and C open for T_fault, then off. D12, D19</td>
+<td>One sequence for every fault. Stage 1 turns off the cells, SSRs, booster, brine pump, A and D together. Stage 2 closes B and C 30 s later</td>
+<td>Same</td>
+<td><code>shutdown_alarm_stage_1_off()</code>, <code>shutdown_alarm_stage_2_off()</code>, and the 30000 ms delay in <code>shutdown_alarm_task()</code>. v119 l.246, v132 l.268</td>
+<td>On a leak or blockage the gas lines stay open for 30 s with no suction. On an overcurrent or brine-low fault the booster stops at once, so nothing clears the gas</td>
+<td>Safety</td>
+<td>Two sequences as in T9 and T11, with T_fault settable</td>
+</tr>
+<tr id="X4">
+<td>X4</td>
+<td>Restart after power loss</td>
+<td>Power lost outside Standby: boot to Standby, alert, drain owed, restart lockout cleared over MQTT or on site. Power lost in Standby: resume. D13, D18</td>
+<td>The work mode comes back from screen flash, so the unit resumes Generate or Auto. No alert, no lockout</td>
+<td>Same</td>
+<td><code>ReadUserFlash(2048,4)</code>, v119 l.575, v132 l.678. <code>NotifyReadFlash()</code> in <code>screen_process.c</code>, v119 l.1491, v132 l.1508</td>
+<td>After a power cut mid-run the unit restarts generation unattended. Restart to OFF, which HCG-349 calls a fix for the standby-current fault, is in neither build</td>
+<td>Safety</td>
+<td>Running marker and lockout in NVS, an alert event, and an MQTT command plus a screen action to clear the lockout, as in T14 and T15</td>
+</tr>
+<tr id="X5">
+<td>X5</td>
+<td>Flow and pressure faults outside generation</td>
+<td>Hydraulic faults apply whenever the booster has run T_settle, so in Generation shutdown, the drain and the flush too. T9</td>
+<td>FL_A and pressure checks run in every mode. The same unconditional check raised the false FL_A LOW in standby on v1.10.124 (HCG-342)</td>
+<td>Both checks reset unless the unit is generating and past start stage 3</td>
+<td><code>system_control_task()</code>. v132 l.1245 and l.1376</td>
+<td>In v1.10.132 nothing watches flow or pressure during the 180 s shutdown dwell, and nothing would during a drain</td>
+<td>Safety</td>
+<td>Gate both checks on "booster commanded on for at least T_settle" in place of "generating"</td>
+</tr>
+<tr id="X6">
+<td>X6</td>
+<td>A during Generation shutdown</td>
+<td>A open, with B, C and the booster, for 180 s. S, D3</td>
+<td>A closes at once in shutdown stage 1. The booster, B and C stop after 180 s</td>
+<td>Same</td>
+<td><code>apply_standby_function()</code>, stage 0. v119 l.436, v132 l.539</td>
+<td>No input water sweeps remnant Cl₂ out of the column and B line. The booster pulls on the gas lines only</td>
+<td>Function</td>
+<td>Close A in stage 2, ahead of B and C (I2)</td>
+</tr>
+<tr id="X7">
+<td>X7</td>
+<td>Caustic drain</td>
+<td>Caustic drain and Caustic drain shutdown at the end of automated runs and every T_int, with drain owed. D5, D8, D9, D10, D16</td>
+<td>None. Valve D opens only from the factory test page and closes on a fault</td>
+<td>Same</td>
+<td>No drain code. The only open path is <code>screen_process.c</code> case 26, v119 l.839, v132 l.856</td>
+<td>Caustic is never drained automatically, and brine pH climbs toward the EVT 1 scaling failure (HCG-351)</td>
+<td>Function</td>
+<td>Implement section 3, T2 and T5 to T8</td>
+</tr>
+<tr id="X8">
+<td>X8</td>
+<td>Factory test page against the control loop</td>
+<td>A manual drain is a firmware sequence, T2</td>
+<td>The test page doesn't pause <code>system_control_task()</code>. In Standby the loop rewrites A, B, C, the booster, pinch and SSRs to off every 500 ms and leaves D alone. Screen 25's manual valve-A open (<code>valve_switch_flag = 1</code>) is overwritten the same way</td>
+<td>Same</td>
+<td><code>apply_standby_function()</code> enforce block, v119 l.480, v132 l.583. <code>system_control_task()</code>, v119 l.1386, v132 l.1605</td>
+<td>A manual valve-D drain from the test page, which aging plan V3.1 calls for, runs with the booster held off and so no venturi suction, unless it starts within 180 s of a stop</td>
+<td>Function</td>
+<td>Add a manual drain command that runs T2. Until then, HSW drains inside the 180 s window, or the loop stops writing outputs while <code>factory_test_f</code> is set</td>
+</tr>
+<tr id="X9">
+<td>X9</td>
+<td>D in Standby</td>
+<td>Commanded closed. D4, I9</td>
+<td><code>apply_standby_function()</code> never writes valve D</td>
+<td>Same</td>
+<td><code>apply_standby_function()</code></td>
+<td>D opened from the test page stays open in Standby</td>
+<td>Function</td>
+<td>Close D in stage 0 and in the enforce block</td>
+</tr>
+<tr id="X10">
+<td>X10</td>
+<td>Brine at P17</td>
+<td>Brine-high hold: pinch closed up to 15 s, cells off, then A closed, resume after 120 s dry. D7, D17</td>
+<td>P17 low is a shutdown fault, logged as "alkaliLevel". The control logic never powers the pinch</td>
+<td>Same</td>
+<td><code>level_p17_fault</code>, v119 l.1085, v132 l.1193</td>
+<td>Brine at the top sensor stops the unit through the X3 sequence, with the booster off at once, and nothing restarts it</td>
+<td>Function</td>
+<td>Replace the P17 fault with T10, and cap pinch-closed time at T_p17</td>
+</tr>
+<tr id="X11">
+<td>X11</td>
+<td>Stop kinds and drain owed</td>
+<td>User stops skip the drain and set drain owed. Automated ends drain. D9, D16</td>
+<td>One stop path for every source</td>
+<td>Same</td>
+<td><code>system_control_task()</code> mode branches</td>
+<td>No way to defer a drain to the next start</td>
+<td>Function</td>
+<td>Track the stop source and the drain-owed flag, as in section 3 and section 6</td>
+</tr>
+<tr id="X12">
+<td>X12</td>
+<td>Timers fixed at build</td>
+<td>Every sequence timer settable over MQTT and kept in NVS. D8, D19, section 5</td>
+<td><code>GENERATE_STAGE_WAIT_MS</code>, <code>STANDBY_STAGE_WAIT_MS</code> and the 30 s fault delay are compile-time constants</td>
+<td>Same, plus <code>GENERATE_STAGE3_WAIT_MS</code></td>
+<td>Top of <code>AppTask.c</code> and <code>shutdown_alarm_task()</code></td>
+<td>Every timing change needs a new build and an OTA</td>
+<td>Function</td>
+<td>Follow the <code>setFlowALowThreshold</code> pattern for each setting in section 5</td>
+</tr>
+<tr id="X13">
+<td>X13</td>
+<td>Server-mode comms timeout</td>
+<td>The unit keeps working offline. D16. Exact behaviour open, O3</td>
+<td>5 min without server contact forces Standby</td>
+<td>Same</td>
+<td><code>SERVER_MODE_TIMEOUT_MS</code>, v119 l.1601, v132 l.1820</td>
+<td>A cloud or network outage stops every unit in Server mode</td>
+<td>Function</td>
+<td>Waits on O3</td>
+</tr>
+<tr id="X14">
+<td>X14</td>
+<td>"Solenoid close time" setting</td>
+<td>Retired. D3</td>
+<td>Screen setting, 1 to 60 min, default 5 min. Closes A after the delay, but A is already closed by then</td>
+<td>Same</td>
+<td><code>system_control_task()</code>, v119 l.1511, 1669, 1698. v132 l.1730, 1888, 1917. Setting in <code>screen_process.c</code></td>
+<td>HSW and the field read it as a 5-minute rinse, as in aging plan V3.0 and HSW's Merged 7. It does nothing</td>
+<td>Record</td>
+<td>Remove it, or reuse it as T_genSD</td>
+</tr>
+<tr id="X15">
+<td>X15</td>
+<td>Brine pump stage at start</td>
+<td>Brine pump off, not fitted</td>
+<td>Start stage 1 runs P07 for 10 s on every start</td>
+<td>Same</td>
+<td><code>run_generate_startup_sequence()</code>, stage 0</td>
+<td>10 s added to every start for a pump that isn't there</td>
+<td>Record</td>
+<td>Drop the stage on DVT</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="records-that-disagree-with-the-code-or-with-this-spec">Records that disagree with the code or with this spec</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Records say</th>
+<th>Code or spec says</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr id="R1">
+<td>R1</td>
+<td>Confluence lists v1.10.132 as STABLE with a 9/18 bin. HCG-342 says it wasn't released as of 9/24</td>
+<td>The source is commit <code>dbea6b8</code>, pushed 10/13, on a feature branch, not on <code>main</code></td>
+<td>Urim confirms the commit matches the bin and merges it. Record the pair in HCG-342</td>
+</tr>
+<tr id="R2">
+<td>R2</td>
+<td>v1.10.132 CHANGELOG says the booster runs 5 s before the check</td>
+<td>Code: <code>GENERATE_STAGE3_WAIT_MS</code> = 8000. Confluence says 8 s</td>
+<td>Fix the CHANGELOG</td>
+</tr>
+<tr id="R3">
+<td>R3</td>
+<td>Firmware names P14 to P17 "alkali level" (<code>tca9535_driver.h</code>, the "alkaliLevel" fault). The 3/3 IO doc has the level pin names and descriptions crossed (8/10 logic review)</td>
+<td>Per Alex on 10/19, P14 to P17 are the brine level sensors and the caustic tank has none. Corrected 10/21: they sit in the caustic chamber and read the shared level, so "alkali level" is right about where they sit. The <code>level_bits_change</code> event still reports <code>p10</code> and <code>p13</code>, which are relay outputs now</td>
+<td>Rename in code and in the IO doc. Since field units generate normally, P17 must read high in normal running, so P17 low most likely means brine at the top sensor. Confirm on a bench</td>
+</tr>
+<tr id="R4">
+<td>R4</td>
+<td>PCB schematic V2: valve A is "Brine Tank Inlet (J26)". ARCHITECTURE.md §4.1 draws A between the brine tank and the cell, and §4.2 calls it "brine inlet"</td>
+<td>Firmware and the 8/6 CAD review: water inlet</td>
+<td>Photograph the valves, then fix ARCHITECTURE.md</td>
+</tr>
+<tr id="R5">
+<td>R5</td>
+<td>ARCHITECTURE.md §4.1 and the 10/14 handoff put B between the gas-liquid separator and the mixing column. The PCB schematic calls it "Chlorine Gas Vent"</td>
+<td>Alex, 10/19: B is the mixing column outlet to the venturi T</td>
+<td>Same photographs, then fix ARCHITECTURE.md</td>
+</tr>
+<tr id="R6">
+<td>R6</td>
+<td>Confluence state machine: S0 POWER_ON_INIT, S1 SYSTEM_PREP, S2 SELF_CHECK, S3 NORMAL_OP, S4 MAINTENANCE_OP (ARCHITECTURE.md §4.2)</td>
+<td>Firmware: work modes 0 to 3 and function modes NORMAL, GENERATING, FAULTY. This spec: the five states in section 2</td>
+<td>Retire the Confluence names, or map them to this spec</td>
+</tr>
+<tr id="R7">
+<td>R7</td>
+<td>8/10 logic review §2, caustic drain C1 to C5: straight from Running into the drain with no dwell, B and C reopened at the end, A never mentioned</td>
+<td>This spec runs Generation shutdown first and closes A, B and C for the drain</td>
+<td>Superseded. Mark the 8/10 sequence as replaced</td>
+</tr>
+<tr id="R8">
+<td>R8</td>
+<td>HCG-7 asks for a 3-minute flush after OFF (In Review since 4/16). HSW Merged 7 quotes 3 to 5 min</td>
+<td>Firmware runs the booster 180 s with A closed. This spec: 180 s with A open</td>
+<td>Close HCG-7 against X6</td>
+</tr>
+<tr id="R9">
+<td>R9</td>
+<td>HCG-351 describes a drain of about 30 min with makeup and the mixing column feed closed</td>
+<td>This spec: 10 min to start, settable. Makeup stops because A closes</td>
+<td>Update HCG-351 to point here</td>
+</tr>
+<tr id="R10">
+<td>R10</td>
+<td>ARCHITECTURE.md §4.2: "Valve D discharges the caustic on a firmware cycle"</td>
+<td>Neither build has one</td>
+<td>Fix ARCHITECTURE.md until X7 ships</td>
+</tr>
+<tr id="R11">
+<td>R11</td>
+<td>The field screen runs v1.5.9</td>
+<td>The <code>screen</code> repo stops at swf 1.5.8, <code>96d8964</code></td>
+<td>Urim pushes the v1.5.9 source</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="9-what-already-matches">9. What already matches</h2>
+<p>Urim doesn't need to touch these.</p>
+<ul>
+<li>Chlorine generation outputs: A, B and C open, D closed, booster on, cells on. Both builds.</li>
+<li>The 180 s post-stop dwell with the booster, B and C running. The timer value matches D3. Only A's position is wrong (X6).</li>
+<li>Cells off and SSRs open as the first step of every stop and fault.</li>
+<li>v1.10.132's flow and pressure check before the cells. Only the wait length (X2) and the SSR timing (X1) change.</li>
+<li>Boot drives every output low: valves closed, pumps off, SSRs open.</li>
+<li>The Standby enforce block keeps A, B, C, the booster and the SSRs off. D needs adding (X9).</li>
+<li>After a fault clears the unit stays in Standby with no automatic restart.</li>
+<li>Cell SSRs on P10 and P11 since v1.9.96.</li>
+<li>Ball valve drive: energised is open, de-energised is closed, which fits capacitor-return valves.</li>
+<li>The 22 A, 60 s overcurrent trip and the existing FL_A and pressure-band settings.</li>
+</ul>
+<h2 id="10-open-items">10. Open items</h2>
+<p>Anything not settled in the 10/19 review stays TBD in the tables above and is listed here.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr id="O1">
+<td>O1</td>
+<td>Pinch valve held closed for more than about 20 s blocks the rest of the hardware. Needs troubleshooting. Until it's fixed the brine-high hold can't keep generating with the pinch closed, which is Alex's preferred long-term behaviour</td>
+<td>Urim, HSW</td>
+</tr>
+<tr id="O2">
+<td>O2</td>
+<td>Delay between the SSRs closing and the cells being enabled</td>
+<td>Urim</td>
+</tr>
+<tr id="O3">
+<td>O3</td>
+<td>What a Server-mode unit does when it loses the cloud: carry on with the current run and its normal end, or fall back to the on-device schedule</td>
+<td>Alex</td>
+</tr>
+<tr id="O4">
+<td>O4</td>
+<td>Longest time the unit may sit in the brine-high hold, and what happens if P17 never clears</td>
+<td>Alex</td>
+</tr>
+<tr id="O5">
+<td>O5</td>
+<td>Brine level sensor heights against the D port. If a drain pulls the brine below P14 through the partition holes, the brine-low fault trips mid-drain, and makeup only runs when A opens. A sensor between normal level and the port could also end the drain on level instead of time. 10/21: HSW's 10/16 statement puts normal level at 62 cm, the port at 57.2 cm and the internal connection at 49.5 cm from the tank floor, so a drain lowers both chambers 4.8 cm. The CAD Z values don't match those heights. A photo with the sensor and port heights measured closes this</td>
+<td>HSW</td>
+</tr>
+<tr id="O6">
+<td>O6</td>
+<td><del>Whether the vessel headspace vents to atmosphere. If not, a drain that runs past the moment the port uncovers pulls the 5 mm PP vessel toward vacuum (drain-rate estimate)</del> Closed 10/21 by Alex: the headspace isn't hermetically sealed and can vent. The lids limit evaporation and keep moisture off the cabinet interior. The drawings show an Ø8 hole in the caustic-chamber cover and a 110 × 30 mm salt slot in the brine cover</td>
+<td>Closed</td>
+</tr>
+<tr id="O7">
+<td>O7</td>
+<td>At pool-line pressures somewhere between 40 and 85 kPa the drain stops moving caustic (drain-rate estimate). FL_A sees motive flow only, so nothing detects a drain that moved nothing</td>
+<td>Alex, Urim</td>
+</tr>
+<tr id="O8">
+<td>O8</td>
+<td>DMT notification for the improper-shutdown alert</td>
+<td>Incodeks</td>
+</tr>
+<tr id="O9">
+<td>O9</td>
+<td>Names for the new MQTT commands and settings</td>
+<td>Urim</td>
+</tr>
+<tr id="O10">
+<td>O10</td>
+<td>Valve photographs to settle A and B, NOTES Dashboard item 13</td>
+<td>HSW, Alex</td>
+</tr>
+<tr id="O11">
+<td>O11</td>
+<td>Shipped valve count, four or one gas-line valve</td>
+<td>HSW</td>
+</tr>
+<tr id="O12">
+<td>O12</td>
+<td><del>No caustic level sensing on DVT. A next-build item</del> Corrected 10/21: DVT1 senses the shared level from the caustic chamber. The next-build item is where the sensors go once the dip-tube test sets the lowest safe level, and separate sensing if DVT2 separates the chambers</td>
+<td>Next build</td>
+</tr>
+</tbody>
+</table></div>
+<p>Two notes outside this spec's scope. First, E37: the spec closes C during the drain so suction goes to the caustic, which argues for keeping a separate H₂ valve in the next build. That bears on HSW's proposal to cut the gas-line valves from three to one. Second, the field note's S6 electrode cleaning state isn't covered here and stays a later firmware item.</p></article>
+</main>
+</body>
+</html>

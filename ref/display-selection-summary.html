@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Display Selection Summary</title>
+
+
+<style>
+:root{--paper:#f3f5f8;--surface:#fff;--sunk:#e9edf2;--ink:#142231;--muted:#566474;--rule:#d3dae2;--navy:#1f3864;
+--navy-ink:#fff;--navy-muted:#b9c6dc;--zh:#0067b3;--link:#1d4f9c;--hl:#fff2cc;--focus:#2a6fd6;
+--f-display:"Archivo","Arial Narrow",Arial,sans-serif;--f-body:"IBM Plex Sans","Noto Sans SC",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+--f-zh:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;
+--muted:#9babbb;--rule:#2a3744;--navy:#172742;--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;--muted:#9babbb;--rule:#2a3744;--navy:#172742;
+--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--f-body)}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:var(--link);text-underline-offset:2px}a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.mast{background:var(--navy);color:var(--navy-ink)}header.mast .wrap{padding-block:20px 16px}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--navy-muted)}
+h1{font-family:var(--f-display);font-stretch:86%;font-weight:700;font-size:1.75rem;line-height:1.1;margin:4px 0 0;text-wrap:balance}
+h1 .zh{display:block;font-size:.6em;font-weight:500;color:var(--navy-muted);margin-top:6px;font-family:var(--f-zh)}
+.src{font-size:.82rem;color:var(--navy-muted);margin-top:10px;max-width:90ch}
+main{padding-block:20px 60px}
+.zh{color:var(--zh);font-family:var(--f-zh)}
+.tw{background:var(--surface);border:1px solid var(--rule);border-radius:8px;overflow-x:auto}
+table.hsw{width:100%;border-collapse:collapse;font-size:.85rem}
+.hsw th{text-align:left;vertical-align:bottom;background:var(--sunk);color:var(--muted);font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--rule)}
+.hsw th .zh{display:block;text-transform:none;letter-spacing:0;font-weight:500}
+.hsw td{vertical-align:top;padding:10px;border-bottom:1px solid var(--rule);overflow-wrap:anywhere;min-width:5.5rem}
+.hsw td.idc{font-family:var(--f-mono);font-weight:500;white-space:nowrap;min-width:0}
+.hsw td.wide{min-width:16rem}
+.hsw tr:target td{background:var(--hl)}
+.hsw tr:target td.idc{box-shadow:inset 4px 0 0 var(--link)}
+.pic{color:var(--muted);font-style:italic;font-size:.8rem}
+.doc{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:8px 28px 28px;max-width:1100px}
+.doc h1,.doc h2,.doc h3{font-family:var(--f-display);font-stretch:90%;line-height:1.2;text-wrap:balance}
+.doc h1{font-size:1.6rem;color:var(--ink)}.doc h2{font-size:1.25rem;margin-top:2rem;padding-bottom:4px;border-bottom:2px solid var(--ink)}.doc h3{font-size:1.05rem;margin-top:1.4rem}
+.doc p,.doc li{max-width:80ch}
+.doc .tbl{overflow-x:auto;margin:12px 0}
+.doc table{border-collapse:collapse;font-size:.84rem;min-width:100%}
+.doc th,.doc td{border:1px solid var(--rule);padding:6px 8px;vertical-align:top;text-align:left}
+.doc th{background:var(--sunk)}
+.doc tr:target td{background:var(--hl)}
+.doc code{font-family:var(--f-mono);font-size:.86em;background:var(--sunk);padding:1px 4px;border-radius:3px}
+.doc pre{background:var(--sunk);padding:12px;border-radius:6px;overflow-x:auto;font-size:.8rem}
+.doc pre code{background:none;padding:0}
+.doc blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid var(--link);background:var(--sunk)}
+.doc pre.mermaid{background:var(--surface);text-align:center}
+.doc del{color:var(--muted)}
+.cut{font-size:.85rem;color:var(--muted);border:1px dashed var(--rule);border-radius:6px;padding:8px 12px;margin:14px 0}
+@media (max-width:760px){h1{font-size:1.4rem}.doc{padding:4px 14px 18px}
+ table.hsw,.hsw tbody,.hsw tr,.hsw td{display:block}.hsw thead{display:none}
+ .hsw tr{border-bottom:1px solid var(--rule);padding:10px 12px}.hsw td{border:0;padding:3px 0;min-width:0}
+ .hsw td[data-k]::before{content:attr(data-k);display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+ .hsw td:empty{display:none}}
+</style>
+
+</head>
+<body>
+<header class="mast"><div class="wrap">
+<div class="eyebrow">SWC · display study</div>
+<h1>Display selection summary<span class="zh">屏幕选型总结</span></h1>
+<div class="src">From <code>DVT/DVT2/Display Selection/Chlorine_Genie_Display_Summary.md</code>, the companion to the 16 June display spec (Confluence page 84279298).</div>
+</div></header>
+<main class="wrap">
+<article class="doc"><div class="cut">This copy leaves out the volume and cost rows of the source file. / 本副本不含源文件中的数量和成本两行。</div><h1 id="chlorine-genie-display-selection-summary">Chlorine Genie — Display Selection Summary</h1>
+<p><em>Decision brief &amp; criteria recap · companion to the bilingual sourcing RFQ</em></p>
+<hr />
+<h2 id="1-overview">1. Overview</h2>
+<p>We're selecting the touchscreen display for the <strong>next hardware iteration of the Chlorine Genie</strong>. The current unit is a 7" smart serial display module that is robust but feels low-end, and its UI can only be updated by inserting an SD card into the module — unacceptable for fielded units. The goal is a <strong>premium-feeling 10.1" display</strong> with remote/OTA updatability, while keeping BOM cost reasonable.</p>
+<p>The host MCU is an <strong>ESP32-S3</strong>, which stays as the system controller. Two solution tracks are being quoted in parallel so we can compare on cost and capability; the output of this effort is a <strong>bilingual (EN/中文) RFQ</strong> for the China sourcing team to find candidates.</p>
+<hr />
+<h2 id="2-what-makes-a-display-feel-premium-criteria-framework">2. What Makes a Display Feel "Premium" (criteria framework)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Spec</th>
+<th>What to target</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Optical bonding</strong></td>
+<td>Full lamination (OCA/OCR); no air gap</td>
+<td>Single biggest "premium" lever — kills internal reflections, improves sunlight readability, contrast, ruggedness; the main reason the current panel feels cheap</td>
+</tr>
+<tr>
+<td><strong>Panel technology</strong></td>
+<td>IPS (wide-view); avoid TN. OLED risks burn-in on static HMI</td>
+<td>Viewing-angle stability and color; TN reads as low-end</td>
+</tr>
+<tr>
+<td><strong>Resolution / pixel density</strong></td>
+<td>Match PPI to viewing distance (≈150 PPI at arm's length)</td>
+<td>Angular resolution, not raw PPI, sets perceived sharpness; below threshold → visible pixels, cheap feel</td>
+</tr>
+<tr>
+<td><strong>Brightness / ambient contrast</strong></td>
+<td>≥1000 nits for sunlight; pair with AR coating</td>
+<td>Brightness alone doesn't help if reflections wash it out — ambient contrast is the real metric</td>
+</tr>
+<tr>
+<td><strong>Cover glass + coatings</strong></td>
+<td>Chemically strengthened glass; AR + anti-fingerprint</td>
+<td>Surface feel and glare control are tactile/visual premium cues</td>
+</tr>
+<tr>
+<td><strong>Refresh + pixel response</strong></td>
+<td>60 Hz baseline (90/120 Hz feels premium); GtG ≤ ~10 ms</td>
+<td>Smooth scroll/animation; slow pixel response smears regardless of refresh</td>
+</tr>
+<tr>
+<td><strong>Touch latency / report rate</strong></td>
+<td>End-to-end &lt; ~50 ms; 120 Hz+ scan rate</td>
+<td>The dominant "feel" driver — perceptible far below intuition</td>
+</tr>
+<tr>
+<td><strong>Touch — water rejection</strong></td>
+<td>PCAP with wet-finger / water-rejection mode</td>
+<td>Pool/splash environment; plain PCAP misfires when wet</td>
+</tr>
+<tr>
+<td><strong>Color depth / gamut</strong></td>
+<td>8-bit (16.7M); ≥70% sRGB</td>
+<td>Banding-free gradients, richer UI</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="3-decisions-locked-for-this-project">3. Decisions Locked for This Project</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Decision</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Diagonal size</td>
+<td><strong>10.1"</strong> (up from 7")</td>
+<td>Larger, more premium UI canvas</td>
+</tr>
+<tr>
+<td>Optical bonding</td>
+<td><strong>Required</strong></td>
+<td>Current panel isn't bonded — root cause of the cheap feel</td>
+</tr>
+<tr>
+<td>Resolution</td>
+<td><strong>1280×800 target</strong>, 1024×600 fallback</td>
+<td>Budget allows the sharper option; fallback only if availability/lead-time forces it</td>
+</tr>
+<tr>
+<td>Brightness</td>
+<td><strong>≥800 nits floor, ≥1000 target</strong></td>
+<td>Sunlight-readable; installs vary, so spec to worst case</td>
+</tr>
+<tr>
+<td>Touch</td>
+<td><strong>PCAP + water rejection</strong></td>
+<td>Premium feel + reliable operation when wet</td>
+</tr>
+<tr>
+<td>Operating temp</td>
+<td><strong>−20 °C to +70 °C</strong></td>
+<td>Mixed indoor/outdoor installs</td>
+</tr>
+<tr>
+<td>Architecture</td>
+<td><strong>Spec both Option A and Option B</strong></td>
+<td>Let sourcing price both, decide on capability/effort</td>
+</tr>
+<tr>
+<td>Update method</td>
+<td><strong>Host-pushed OTA required; no SD-card-only</strong></td>
+<td>Fix the fielded-update problem</td>
+</tr>
+<tr>
+<td>Host MCU</td>
+<td><strong>ESP32-S3 (confirmed)</strong></td>
+<td>Stays as system controller; display link is UART (A) or UART/SPI to P4 (B)</td>
+</tr>
+<tr>
+<td>Mechanical</td>
+<td><strong>Display-led — no fixed envelope</strong></td>
+<td>Enclosure designed around selected display; require outline drawing + 3D STEP</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="4-architecture-the-two-tracks">4. Architecture: The Two Tracks</h2>
+<p><strong>Current setup:</strong> a smart serial display module (DWIN/Nextion-class) — its own MCU + GPU, driven by high-level UART commands, UI stored as a compiled blob updated via SD card. The "cheap feel" traces to the <em>panel</em> (non-bonded), not the architecture itself.</p>
+<p><strong>Option A — Better bonded smart serial module.</strong> Keeps the current "S3 sends UART commands" model. Lower integration risk and faster bring-up since the module renders everything. Must use a bonded IPS panel and support serial UI download over the host UART (no SD-card-only path).</p>
+<p><strong>Option B — Bare MIPI-DSI panel + ESP32-P4 display co-processor.</strong> The S3 stays the system brain; a P4 handles rendering and drives a bonded DSI panel, linked over UART/SPI. Higher graphics ceiling and the cleanest OTA (UI lives in our firmware/asset pipeline). More firmware bring-up effort; P4 toolchain still maturing and needs a companion radio for wireless.</p>
+<p><strong>Why not drive the panel directly from the ESP32-S3?</strong> The S3's RGB interface is bandwidth-limited: ~800×480 @ 60 Hz is comfortable, 1024×600 is marginal (bounce buffers, tearing risk), and 1280×800 isn't viable. It also consumes ~20 GPIOs, which collides with the existing RS485/Modbus and sensor load. For a premium 10.1" at 1280×800, S3-native forces a quality compromise — ruled out.</p>
+<p><strong>A vs B — the real deciding factor:</strong> The choice comes down to <strong>firmware effort and OTA/UI control</strong>, not parts cost. Option A is faster to a premium result; Option B gives full UI ownership and cleaner OTA at the cost of P4 + LVGL bring-up.</p>
+<hr />
+<h2 id="5-open-items-next-steps">5. Open Items / Next Steps</h2>
+<ul>
+<li>[ ] <strong>A-vs-B decision</strong> — pending supplier quotes + a firmware-effort weighting. This is the main open decision.</li>
+<li>[ ] <strong>Firmware-effort comparison</strong> (S3↔smart-module UART vs. S3↔P4 + P4/LVGL bring-up) — offered, not yet produced; would help pre-weight the A/B call.</li>
+<li>[ ] <strong>Final resolution</strong> (1280×800 vs 1024×600) — confirm against candidate availability and lead time.</li>
+<li>[ ] <strong>Mechanical</strong> — intentionally deferred; collect full outline drawing + 3D STEP from the selected vendor, then design the enclosure around it.</li>
+<li>[ ] <strong>Host link details</strong> — finalize UART (Option A) or UART/SPI to the P4 (Option B) at integration.</li>
+<li>[ ] <strong>Supplier deliverables to collect</strong> — datasheets, ≥2 samples per option, compliance (RoHS/REACH, CE/FCC), SDK/UI toolchain, reliability data, tiered pricing, MOQ, lead time.</li>
+</ul>
+<hr />
+<h2 id="6-deliverable-produced">6. Deliverable Produced</h2>
+<ul>
+<li><strong>Chlorine Genie Display RFQ</strong> (bilingual EN/中文) — full spec for both tracks, common panel/touch requirements, OTA requirement, commercial terms, and a candidate-response matrix for sourcing to fill in.</li>
+</ul></article>
+</main>
+</body>
+</html>

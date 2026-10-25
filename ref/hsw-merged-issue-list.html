@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HSW Merged Issue List</title>
+
+
+<style>
+:root{--paper:#f3f5f8;--surface:#fff;--sunk:#e9edf2;--ink:#142231;--muted:#566474;--rule:#d3dae2;--navy:#1f3864;
+--navy-ink:#fff;--navy-muted:#b9c6dc;--zh:#0067b3;--link:#1d4f9c;--hl:#fff2cc;--focus:#2a6fd6;
+--f-display:"Archivo","Arial Narrow",Arial,sans-serif;--f-body:"IBM Plex Sans","Noto Sans SC",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+--f-zh:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;
+--muted:#9babbb;--rule:#2a3744;--navy:#172742;--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;--muted:#9babbb;--rule:#2a3744;--navy:#172742;
+--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--f-body)}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:var(--link);text-underline-offset:2px}a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.mast{background:var(--navy);color:var(--navy-ink)}header.mast .wrap{padding-block:20px 16px}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--navy-muted)}
+h1{font-family:var(--f-display);font-stretch:86%;font-weight:700;font-size:1.75rem;line-height:1.1;margin:4px 0 0;text-wrap:balance}
+h1 .zh{display:block;font-size:.6em;font-weight:500;color:var(--navy-muted);margin-top:6px;font-family:var(--f-zh)}
+.src{font-size:.82rem;color:var(--navy-muted);margin-top:10px;max-width:90ch}
+main{padding-block:20px 60px}
+.zh{color:var(--zh);font-family:var(--f-zh)}
+.tw{background:var(--surface);border:1px solid var(--rule);border-radius:8px;overflow-x:auto}
+table.hsw{width:100%;border-collapse:collapse;font-size:.85rem}
+.hsw th{text-align:left;vertical-align:bottom;background:var(--sunk);color:var(--muted);font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--rule)}
+.hsw th .zh{display:block;text-transform:none;letter-spacing:0;font-weight:500}
+.hsw td{vertical-align:top;padding:10px;border-bottom:1px solid var(--rule);overflow-wrap:anywhere;min-width:5.5rem}
+.hsw td.idc{font-family:var(--f-mono);font-weight:500;white-space:nowrap;min-width:0}
+.hsw td.wide{min-width:16rem}
+.hsw tr:target td{background:var(--hl)}
+.hsw tr:target td.idc{box-shadow:inset 4px 0 0 var(--link)}
+.pic{color:var(--muted);font-style:italic;font-size:.8rem}
+.doc{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:8px 28px 28px;max-width:1100px}
+.doc h1,.doc h2,.doc h3{font-family:var(--f-display);font-stretch:90%;line-height:1.2;text-wrap:balance}
+.doc h1{font-size:1.6rem;color:var(--ink)}.doc h2{font-size:1.25rem;margin-top:2rem;padding-bottom:4px;border-bottom:2px solid var(--ink)}.doc h3{font-size:1.05rem;margin-top:1.4rem}
+.doc p,.doc li{max-width:80ch}
+.doc .tbl{overflow-x:auto;margin:12px 0}
+.doc table{border-collapse:collapse;font-size:.84rem;min-width:100%}
+.doc th,.doc td{border:1px solid var(--rule);padding:6px 8px;vertical-align:top;text-align:left}
+.doc th{background:var(--sunk)}
+.doc tr:target td{background:var(--hl)}
+.doc code{font-family:var(--f-mono);font-size:.86em;background:var(--sunk);padding:1px 4px;border-radius:3px}
+.doc pre{background:var(--sunk);padding:12px;border-radius:6px;overflow-x:auto;font-size:.8rem}
+.doc pre code{background:none;padding:0}
+.doc blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid var(--link);background:var(--sunk)}
+.doc pre.mermaid{background:var(--surface);text-align:center}
+.doc del{color:var(--muted)}
+.cut{font-size:.85rem;color:var(--muted);border:1px dashed var(--rule);border-radius:6px;padding:8px 12px;margin:14px 0}
+@media (max-width:760px){h1{font-size:1.4rem}.doc{padding:4px 14px 18px}
+ table.hsw,.hsw tbody,.hsw tr,.hsw td{display:block}.hsw thead{display:none}
+ .hsw tr{border-bottom:1px solid var(--rule);padding:10px 12px}.hsw td{border:0;padding:3px 0;min-width:0}
+ .hsw td[data-k]::before{content:attr(data-k);display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+ .hsw td:empty{display:none}}
+</style>
+
+</head>
+<body>
+<header class="mast"><div class="wrap">
+<div class="eyebrow">HSW issue list and risk assessment · 13 October 2026</div>
+<h1>Infied Issue List, Merged 1 to 10<span class="zh">问题汇总表（汇总问题1至10）</span></h1>
+<div class="src">Text extract of HSW's workbook <span lang="zh">HCG50-制氯机问题点汇总及风险评估_20261013.xlsx</span>, shown as HSW wrote it. Pictures in the workbook are left out. <span class="zh" style="color:inherit">HSW工作簿文本摘录，按原文显示，不含图片。</span></div>
+</div></header>
+<main class="wrap">
+<div class="tw"><table class="hsw"><thead><tr><th>No.<span class=zh>序号</span></th><th>Problem<span class=zh>问题描述</span></th><th>Stage<span class=zh>阶段</span></th><th>Location<span class=zh>地点</span></th><th>Type<span class=zh>问题类型</span></th><th>Solution<span class=zh>解决办法</span></th><th>Current status and next actions<span class=zh>目前现状及后续动作</span></th><th>Severity<span class=zh>严重程度</span></th><th>Notes<span class=zh>备注</span></th></tr></thead><tbody><tr id="Merged-1"><td class="idc" data-k="No.">1</td><td class="wide" data-k="Problem">样机不论在深圳的测试中还是美国首批样机现场使用过程中都出现不同程度的生锈；</td><td class="" data-k="Stage">DVT</td><td class="" data-k="Location">美国/深圳</td><td class="" data-k="Type">结构</td><td class="wide" data-k="Solution">目前整体设计中已采用模块化设计思路，将控制模块和流路模块远离盐水箱，<br>但现阶段设计既需要考虑防腐也要考虑标准件定制材质周期，以及小批量的加工工艺问题，因此对功能影响程度较高的部件提升防腐等级更高，依然存在防护等级不够的金属部件；</td><td class="wide" data-k="Current status and next actions">1、继续减少产品的金属部件；<br>2、考虑对外壳进行采用成本低廉的模具工艺（例如真空吹塑），减少连接件和固定螺丝；<br>3、在成本允许的范围可能需要采用钛合金螺丝进行各零部件的固定；<br>4、对整机进行开模方案讨论；</td><td class="" data-k="Severity">B</td><td data-k="Notes"></td></tr><tr id="Merged-2"><td class="idc" data-k="No.">2</td><td class="wide" data-k="Problem">由于减重要求，将10mm更换为5mm制作的10个PP水箱，在深圳的测试中和美国现场的使用中都出现严重的漏水；</td><td class="" data-k="Stage">DVT</td><td class="" data-k="Location">美国/深圳</td><td class="" data-k="Type">结构</td><td class="wide" data-k="Solution">短期：更换制作的供应商，优化焊接工艺，厚度改为10mm；<br>长期：考虑开模彻底解决该问题；</td><td class="wide" data-k="Current status and next actions">计划重新制作10mmPP水箱</td><td class="" data-k="Severity">A</td><td data-k="Notes"></td></tr><tr id="Merged-3"><td class="idc" data-k="No.">3</td><td class="wide" data-k="Problem">现有屏幕防护等级，和安装方式，在户外环境中（高温）使用有很大故障和损坏风险；</td><td class="" data-k="Stage">DVT</td><td class="" data-k="Location">美国/深圳</td><td class="" data-k="Type">结构/硬件</td><td class="wide" data-k="Solution">短期：增加防晒防雨板，经过在深圳测试可以有效降低屏幕表面温度10-15度左右；<br>长期：屏幕重新选型，安装结构重新设计；</td><td class="wide" data-k="Current status and next actions">计划制作新的防晒板</td><td class="" data-k="Severity">A</td><td data-k="Notes"></td></tr><tr id="Merged-4"><td class="idc" data-k="No.">4</td><td class="wide" data-k="Problem">产品上电后有微电流到达电极，PCBA关断电路没有触发，导致在用户未开启设备前出现轻微电解，损坏产品（腐蚀）；</td><td class="" data-k="Stage">DVT</td><td class="" data-k="Location">美国</td><td class="" data-k="Type">硬件/软件</td><td class="wide" data-k="Solution">软件：产品未启动之前软件触发PVBA上的关断电路；<br>硬件：增加两路常开继电器，在产品上电后物理阻断pvba前端上电；</td><td class="wide" data-k="Current status and next actions">软件：产品未启动之前软件触发PVBA上的关断电路；<br>硬件：增加两路常开继电器，在产品上电后物理阻断pvba前端上电；</td><td class="" data-k="Severity">A</td><td data-k="Notes"></td></tr><tr id="Merged-5"><td class="idc" data-k="No.">5</td><td class="wide" data-k="Problem">软件误判（流量计A数值）导致产品无法打开运行</td><td class="" data-k="Stage">DVT</td><td class="" data-k="Location">深圳/美国</td><td class="" data-k="Type">软件</td><td class="wide" data-k="Solution">不同安装现场压力及流量数值可能有很大差异，在制定阈值时需要采集更多数据；</td><td class="wide" data-k="Current status and next actions">目前V1.10.132版本中，软件判断周围环境状态的时间点改到增压水泵运行以后，当流量计A低于3L/分钟或者压力数值低于0.02mpa后触发停机保护，当流量计A在连续几次采集数据中波动过大，触发停机保护；待不同安装现场，长期验证；</td><td class="" data-k="Severity">A</td><td class="" data-k="Notes">/</td></tr><tr id="Merged-6"><td class="idc" data-k="No.">6</td><td class="wide" data-k="Problem">EVT样机在美国测试中，增压水泵和所配合的电源适配器发热严重，一台出现损坏；</td><td class="" data-k="Stage">EVT</td><td class="" data-k="Location">美国</td><td class="" data-k="Type">硬件</td><td class="wide" data-k="Solution">项目验证初期淘宝采购，供应商审核不严格，后续更换更加优秀的供应商，产品带有CE认证；</td><td class="wide" data-k="Current status and next actions">更换为深圳中科世纪科技有限公司的DC55E-24160S型号（认证：CE,ROSH    寿命：≥30000h连续；防水：IP68），取消电流调节改为固定转速款，待长时间老化后反馈；</td><td class="" data-k="Severity">A</td><td data-k="Notes"></td></tr><tr id="Merged-7"><td class="idc" data-k="No.">7</td><td class="wide" data-k="Problem">EVT样机在美国测试中出现，文丘里管堵塞，盐水酸碱失衡</td><td class="" data-k="Stage">EVT</td><td class="" data-k="Location">美国</td><td class="" data-k="Type">原理</td><td class="wide" data-k="Solution">短期：制氯结束后增压水泵持续工作3-5分钟进行管路清洁；<br>长期：软件增加排碱机制，PH过高触发排碱，或持续运行固定时间后排碱；等待老化测试中验证；</td><td class="wide" data-k="Current status and next actions">制氯结束后增压水泵持续工作3-5分钟进行管路清洁；</td><td class="" data-k="Severity">A</td><td class="" data-k="Notes">/</td></tr><tr id="Merged-8"><td class="idc" data-k="No.">8</td><td class="wide" data-k="Problem">EVT:碱水排放口出现漏液</td><td class="" data-k="Stage">EVT</td><td class="" data-k="Location">美国</td><td class="" data-k="Type">结构</td><td class="wide" data-k="Solution">弧面密封+螺纹密封垫密封困难，后续设计考虑直接将接头焊接到筒壁碱水桶和盐水箱一体化设计，或考虑模具直接生成螺纹特征</td><td class="wide" data-k="Current status and next actions">直接将接头焊接到筒壁碱水桶和盐水箱一体化设计</td><td class="" data-k="Severity">A</td><td data-k="Notes"></td></tr><tr id="Merged-9"><td class="idc" data-k="No.">9</td><td class="wide" data-k="Problem">盐水箱内部挡盐板固定螺丝生锈导致盐水污染</td><td class="" data-k="Stage">EVT</td><td class="" data-k="Location">深圳/美国</td><td class="" data-k="Type">结构</td><td class="wide" data-k="Solution">取消盐水桶内部螺丝，减轻防腐压力</td><td class="wide" data-k="Current status and next actions">盐水桶内部螺丝已全部取消，隔板采用焊接工艺</td><td class="" data-k="Severity">A</td><td data-k="Notes"></td></tr><tr id="Merged-10"><td class="idc" data-k="No.">10</td><td class="wide" data-k="Problem">EVT测试中发现仅靠PWM信号是无法完全关断电解电流的<br>DVT机器物料关断</td><td class="" data-k="Stage">EVT</td><td class="" data-k="Location">深圳/美国</td><td class="" data-k="Type">硬件</td><td class="wide" data-k="Solution">短期：增加PCBA电解电流关断电路，由软件控制；<br>长期：增加继电器对PCBA前端进行电流隔断；</td><td class="wide" data-k="Current status and next actions">增加PCBA电解电流关断电路，由软件控制；</td><td class="" data-k="Severity">A</td><td data-k="Notes"></td></tr></tbody></table></div>
+</main>
+</body>
+</html>

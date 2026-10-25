@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HSW Maturity Grid</title>
+
+
+<style>
+:root{--paper:#f3f5f8;--surface:#fff;--sunk:#e9edf2;--ink:#142231;--muted:#566474;--rule:#d3dae2;--navy:#1f3864;
+--navy-ink:#fff;--navy-muted:#b9c6dc;--zh:#0067b3;--link:#1d4f9c;--hl:#fff2cc;--focus:#2a6fd6;
+--f-display:"Archivo","Arial Narrow",Arial,sans-serif;--f-body:"IBM Plex Sans","Noto Sans SC",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+--f-zh:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;
+--muted:#9babbb;--rule:#2a3744;--navy:#172742;--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;--muted:#9babbb;--rule:#2a3744;--navy:#172742;
+--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--f-body)}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:var(--link);text-underline-offset:2px}a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.mast{background:var(--navy);color:var(--navy-ink)}header.mast .wrap{padding-block:20px 16px}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--navy-muted)}
+h1{font-family:var(--f-display);font-stretch:86%;font-weight:700;font-size:1.75rem;line-height:1.1;margin:4px 0 0;text-wrap:balance}
+h1 .zh{display:block;font-size:.6em;font-weight:500;color:var(--navy-muted);margin-top:6px;font-family:var(--f-zh)}
+.src{font-size:.82rem;color:var(--navy-muted);margin-top:10px;max-width:90ch}
+main{padding-block:20px 60px}
+.zh{color:var(--zh);font-family:var(--f-zh)}
+.tw{background:var(--surface);border:1px solid var(--rule);border-radius:8px;overflow-x:auto}
+table.hsw{width:100%;border-collapse:collapse;font-size:.85rem}
+.hsw th{text-align:left;vertical-align:bottom;background:var(--sunk);color:var(--muted);font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--rule)}
+.hsw th .zh{display:block;text-transform:none;letter-spacing:0;font-weight:500}
+.hsw td{vertical-align:top;padding:10px;border-bottom:1px solid var(--rule);overflow-wrap:anywhere;min-width:5.5rem}
+.hsw td.idc{font-family:var(--f-mono);font-weight:500;white-space:nowrap;min-width:0}
+.hsw td.wide{min-width:16rem}
+.hsw tr:target td{background:var(--hl)}
+.hsw tr:target td.idc{box-shadow:inset 4px 0 0 var(--link)}
+.pic{color:var(--muted);font-style:italic;font-size:.8rem}
+.doc{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:8px 28px 28px;max-width:1100px}
+.doc h1,.doc h2,.doc h3{font-family:var(--f-display);font-stretch:90%;line-height:1.2;text-wrap:balance}
+.doc h1{font-size:1.6rem;color:var(--ink)}.doc h2{font-size:1.25rem;margin-top:2rem;padding-bottom:4px;border-bottom:2px solid var(--ink)}.doc h3{font-size:1.05rem;margin-top:1.4rem}
+.doc p,.doc li{max-width:80ch}
+.doc .tbl{overflow-x:auto;margin:12px 0}
+.doc table{border-collapse:collapse;font-size:.84rem;min-width:100%}
+.doc th,.doc td{border:1px solid var(--rule);padding:6px 8px;vertical-align:top;text-align:left}
+.doc th{background:var(--sunk)}
+.doc tr:target td{background:var(--hl)}
+.doc code{font-family:var(--f-mono);font-size:.86em;background:var(--sunk);padding:1px 4px;border-radius:3px}
+.doc pre{background:var(--sunk);padding:12px;border-radius:6px;overflow-x:auto;font-size:.8rem}
+.doc pre code{background:none;padding:0}
+.doc blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid var(--link);background:var(--sunk)}
+.doc pre.mermaid{background:var(--surface);text-align:center}
+.doc del{color:var(--muted)}
+.cut{font-size:.85rem;color:var(--muted);border:1px dashed var(--rule);border-radius:6px;padding:8px 12px;margin:14px 0}
+@media (max-width:760px){h1{font-size:1.4rem}.doc{padding:4px 14px 18px}
+ table.hsw,.hsw tbody,.hsw tr,.hsw td{display:block}.hsw thead{display:none}
+ .hsw tr{border-bottom:1px solid var(--rule);padding:10px 12px}.hsw td{border:0;padding:3px 0;min-width:0}
+ .hsw td[data-k]::before{content:attr(data-k);display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+ .hsw td:empty{display:none}}
+</style>
+
+</head>
+<body>
+<header class="mast"><div class="wrap">
+<div class="eyebrow">HSW issue list and risk assessment · 13 October 2026</div>
+<h1>Maturity Grid summary<span class="zh">成熟度汇总</span></h1>
+<div class="src">Text extract of HSW's workbook <span lang="zh">HCG50-制氯机问题点汇总及风险评估_20261013.xlsx</span>, shown as HSW wrote it. Pictures in the workbook are left out. <span class="zh" style="color:inherit">HSW工作簿文本摘录，按原文显示，不含图片。</span></div>
+</div></header>
+<main class="wrap">
+<div class="doc"><pre>Project Name :  Chlorine Geine
+Maturity Grid Summary Report
+	Electrical							Mechanical
+			Severity Index							Severity Index
+			S	A	B	C				S	A	B	C
+	Progress Index	4	1	25	11	0		Progress Index	4	5	34	5	0
+		3							3
+		2							2
+		1							1
+		0							0
+Severity Index
+	S	Defects with Safety consequences or constitutes Regulatory Non-Compliance
+	A	Defects that renders the product unsellable or not manufacturable with standard process
+	B	Defects that render the product acceptable only for dedicated customers
+	C	Defects on the product that may bring some customer remarks.</pre></div>
+</main>
+</body>
+</html>

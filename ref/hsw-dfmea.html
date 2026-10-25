@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HSW DFMEA</title>
+
+
+<style>
+:root{--paper:#f3f5f8;--surface:#fff;--sunk:#e9edf2;--ink:#142231;--muted:#566474;--rule:#d3dae2;--navy:#1f3864;
+--navy-ink:#fff;--navy-muted:#b9c6dc;--zh:#0067b3;--link:#1d4f9c;--hl:#fff2cc;--focus:#2a6fd6;
+--f-display:"Archivo","Arial Narrow",Arial,sans-serif;--f-body:"IBM Plex Sans","Noto Sans SC",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+--f-zh:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;
+--muted:#9babbb;--rule:#2a3744;--navy:#172742;--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0e141b;--surface:#151d26;--sunk:#1c2632;--ink:#e2e8ef;--muted:#9babbb;--rule:#2a3744;--navy:#172742;
+--navy-ink:#eef3fb;--navy-muted:#9fb0cc;--zh:#73b6f2;--link:#93b9ff;--hl:#3a3219;--focus:#7aa8ff;color-scheme:dark}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--f-body)}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:var(--link);text-underline-offset:2px}a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.mast{background:var(--navy);color:var(--navy-ink)}header.mast .wrap{padding-block:20px 16px}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--navy-muted)}
+h1{font-family:var(--f-display);font-stretch:86%;font-weight:700;font-size:1.75rem;line-height:1.1;margin:4px 0 0;text-wrap:balance}
+h1 .zh{display:block;font-size:.6em;font-weight:500;color:var(--navy-muted);margin-top:6px;font-family:var(--f-zh)}
+.src{font-size:.82rem;color:var(--navy-muted);margin-top:10px;max-width:90ch}
+main{padding-block:20px 60px}
+.zh{color:var(--zh);font-family:var(--f-zh)}
+.tw{background:var(--surface);border:1px solid var(--rule);border-radius:8px;overflow-x:auto}
+table.hsw{width:100%;border-collapse:collapse;font-size:.85rem}
+.hsw th{text-align:left;vertical-align:bottom;background:var(--sunk);color:var(--muted);font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--rule)}
+.hsw th .zh{display:block;text-transform:none;letter-spacing:0;font-weight:500}
+.hsw td{vertical-align:top;padding:10px;border-bottom:1px solid var(--rule);overflow-wrap:anywhere;min-width:5.5rem}
+.hsw td.idc{font-family:var(--f-mono);font-weight:500;white-space:nowrap;min-width:0}
+.hsw td.wide{min-width:16rem}
+.hsw tr:target td{background:var(--hl)}
+.hsw tr:target td.idc{box-shadow:inset 4px 0 0 var(--link)}
+.pic{color:var(--muted);font-style:italic;font-size:.8rem}
+.doc{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:8px 28px 28px;max-width:1100px}
+.doc h1,.doc h2,.doc h3{font-family:var(--f-display);font-stretch:90%;line-height:1.2;text-wrap:balance}
+.doc h1{font-size:1.6rem;color:var(--ink)}.doc h2{font-size:1.25rem;margin-top:2rem;padding-bottom:4px;border-bottom:2px solid var(--ink)}.doc h3{font-size:1.05rem;margin-top:1.4rem}
+.doc p,.doc li{max-width:80ch}
+.doc .tbl{overflow-x:auto;margin:12px 0}
+.doc table{border-collapse:collapse;font-size:.84rem;min-width:100%}
+.doc th,.doc td{border:1px solid var(--rule);padding:6px 8px;vertical-align:top;text-align:left}
+.doc th{background:var(--sunk)}
+.doc tr:target td{background:var(--hl)}
+.doc code{font-family:var(--f-mono);font-size:.86em;background:var(--sunk);padding:1px 4px;border-radius:3px}
+.doc pre{background:var(--sunk);padding:12px;border-radius:6px;overflow-x:auto;font-size:.8rem}
+.doc pre code{background:none;padding:0}
+.doc blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid var(--link);background:var(--sunk)}
+.doc pre.mermaid{background:var(--surface);text-align:center}
+.doc del{color:var(--muted)}
+.cut{font-size:.85rem;color:var(--muted);border:1px dashed var(--rule);border-radius:6px;padding:8px 12px;margin:14px 0}
+@media (max-width:760px){h1{font-size:1.4rem}.doc{padding:4px 14px 18px}
+ table.hsw,.hsw tbody,.hsw tr,.hsw td{display:block}.hsw thead{display:none}
+ .hsw tr{border-bottom:1px solid var(--rule);padding:10px 12px}.hsw td{border:0;padding:3px 0;min-width:0}
+ .hsw td[data-k]::before{content:attr(data-k);display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+ .hsw td:empty{display:none}}
+</style>
+
+</head>
+<body>
+<header class="mast"><div class="wrap">
+<div class="eyebrow">HSW issue list and risk assessment · 13 October 2026</div>
+<h1>DFMEA, rows 1 to 17<span class="zh">DFMEA表（1至17）</span></h1>
+<div class="src">Text extract of HSW's workbook <span lang="zh">HCG50-制氯机问题点汇总及风险评估_20261013.xlsx</span>, shown as HSW wrote it. Pictures in the workbook are left out. <span class="zh" style="color:inherit">HSW工作簿文本摘录，按原文显示，不含图片。</span></div>
+</div></header>
+<main class="wrap">
+<div class="tw"><table class="hsw"><thead><tr><th>No.<span class=zh>序号</span></th><th>Failure mode<span class=zh>问题描述</span></th><th>Owner<span class=zh>责任人</span></th><th>Status<span class=zh>状态</span></th><th>Cause<span class=zh>原因</span></th><th>Countermeasure<span class=zh>对策</span></th><th>Level<span class=zh>问题等级</span></th><th>Type<span class=zh>问题类型</span></th><th>Jira ticket</th></tr></thead><tbody><tr id="DFMEA-1"><td class="idc" data-k="No.">1</td><td class="wide" data-k="Failure mode">球阀失效模式（卡在打开位置）</td><td class="" data-k="Owner">秦发胜</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">球阀无位置传感器，无法远程检测</td><td class="wide" data-k="Countermeasure">识别间接指标（流量异常、电极行为）；评估是否触发安全停机</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-2"><td class="idc" data-k="No.">2</td><td class="wide" data-k="Failure mode">电动球阀A卡死无法完全打开或关闭</td><td class="" data-k="Owner">秦发胜</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">电机老化、转轴生锈、线路控制失效</td><td class="wide" data-k="Countermeasure">增减流量计C监测判断球阀开启或关闭状态，发现异常后停机</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-3"><td class="idc" data-k="No.">3</td><td class="wide" data-k="Failure mode">电动球阀B卡死</td><td class="" data-k="Owner">秦发胜</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">电机老化、转轴生锈、线路控制失效</td><td class="wide" data-k="Countermeasure">保留电动球阀长时间测试观察运行稳定情况；考虑取消改用PTFE材质单向阀</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-4"><td class="idc" data-k="No.">4</td><td class="wide" data-k="Failure mode">电动球阀C卡死</td><td class="" data-k="Owner">秦发胜</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">电机老化、转轴生锈、线路控制失效</td><td class="wide" data-k="Countermeasure">增加液位传感器和盐水桶PH电极辅助判断电动球阀C开关情况</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-5"><td class="idc" data-k="No.">5</td><td class="wide" data-k="Failure mode">电动球阀D卡死</td><td class="" data-k="Owner">秦发胜</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">电机老化、转轴生锈、线路控制失效</td><td class="wide" data-k="Countermeasure">增加泄压阀装置（0.01MPA-0.1MPA自动排放）；或取消改用PTFE材质单向阀</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-6"><td class="idc" data-k="No.">6</td><td class="wide" data-k="Failure mode">增压水泵失效-无法启动</td><td class="" data-k="Owner">秦发胜</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">过热保护、出水堵塞、进出水没形成压差或其他故障</td><td class="wide" data-k="Countermeasure">增加增压水泵出水流量监测和压力监测，两个参数交互判断双重保障</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-7"><td class="idc" data-k="No.">7</td><td class="wide" data-k="Failure mode">制氯机生锈部件风险评估：轮子</td><td class="" data-k="Owner">何叶锋</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">普通碳钢材质腐蚀严重</td><td class="wide" data-k="Countermeasure">10/10：结构重新设计，新的结构方案，优先采用塑料</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-8"><td class="idc" data-k="No.">8</td><td class="wide" data-k="Failure mode">氢气泄压阀腐蚀风险</td><td class="" data-k="Owner">何叶锋</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">标准件，定制材质周期和成本过高；</td><td class="wide" data-k="Countermeasure">10/10：评估取消该部件</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-9"><td class="idc" data-k="No.">9</td><td class="wide" data-k="Failure mode">设备外壳及框架腐蚀风险</td><td class="" data-k="Owner">何叶锋</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">碳钢材质</td><td class="wide" data-k="Countermeasure">10/10：结构重新设计，新的结构方案，优先采用塑料</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-10"><td class="idc" data-k="No.">10</td><td class="wide" data-k="Failure mode">漏液传感器腐蚀风险</td><td class="" data-k="Owner">何叶锋</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">裸露金属探测针，304不锈钢，长期使用腐蚀情况需更多数据</td><td class="wide" data-k="Countermeasure">优先选用简单成本低廉方案；如不可靠考虑替换新方案</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-11"><td class="idc" data-k="No.">11</td><td class="wide" data-k="Failure mode">螺丝腐蚀风险</td><td class="" data-k="Owner">何叶锋</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">EVT测试中发现接触盐水的螺丝生锈</td><td class="wide" data-k="Countermeasure">10/10：结构重新设计，新的结构方案，减少螺丝使用；</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-12"><td class="idc" data-k="No.">12</td><td class="wide" data-k="Failure mode">过滤器支架腐蚀风险</td><td class="" data-k="Owner">何叶锋</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">304不锈钢，测试中发现轻微生锈</td><td class="wide" data-k="Countermeasure">10/10：结构重新设计，新的结构方案，优先采用塑料</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-13"><td class="idc" data-k="No.">13</td><td class="wide" data-k="Failure mode">压力传感器腐蚀风险</td><td class="" data-k="Owner">何叶锋</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">304不锈钢，接触泳池循环水有一定腐蚀性</td><td class="wide" data-k="Countermeasure">10/10：标准件，需要跟踪测试结果</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-14"><td class="idc" data-k="No.">14</td><td class="wide" data-k="Failure mode">电动球阀A腐蚀风险</td><td class="" data-k="Owner">何叶锋</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">304不锈钢，接触泳池循环水有一定腐蚀性</td><td class="wide" data-k="Countermeasure">10/10：选用塑料求提到球阀</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-15"><td class="idc" data-k="No.">15</td><td class="wide" data-k="Failure mode">散热片腐蚀风险</td><td class="" data-k="Owner">何叶锋</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">铝材质，EVT样机上看到轻微腐蚀</td><td class="wide" data-k="Countermeasure">10/10：铝板做阳极氧化处理；</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-16"><td class="idc" data-k="No.">16</td><td class="wide" data-k="Failure mode">½内螺纹接头腐蚀风险</td><td class="" data-k="Owner">何叶锋</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">不锈钢，内腔体UPVC材质，金属部分不直接接触液体</td><td class="wide" data-k="Countermeasure">10/10：结构重新设计，选型新的结构</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr><tr id="DFMEA-17"><td class="idc" data-k="No.">17</td><td class="wide" data-k="Failure mode">DVT设计需要考虑散热</td><td class="" data-k="Owner">何叶锋</td><td class="" data-k="Status">Open</td><td class="wide" data-k="Cause">散热需求</td><td class="wide" data-k="Countermeasure">10/10：Demo样机测试各个部件温度，都稳定在60度以内</td><td data-k="Level"></td><td data-k="Type"></td><td data-k="Jira ticket"></td></tr></tbody></table></div>
+</main>
+</body>
+</html>
